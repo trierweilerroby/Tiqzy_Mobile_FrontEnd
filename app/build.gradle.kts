@@ -71,5 +71,9 @@ dependencies {
     // Hilt navigation Compose integration
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
+    //nav
+    implementation("androidx.compose.material:material:1.5.0")
+    implementation("androidx.compose.material3:material3:1.2.0-alpha05")
+
 
 }
