@@ -53,5 +53,6 @@ fun HomePage() {
 fun ProductPage(){
     Tiqzy_Mobile_FrontEndTheme {
         //EventListScreen()
+    //complete jetpack compose integration
     }
 }
