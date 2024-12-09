@@ -16,6 +16,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+import android.app.DatePickerDialog
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import java.util.*
+
 @Composable
 fun SearchBar(
     currentLocation: String,
@@ -24,6 +29,8 @@ fun SearchBar(
     onDateChange: (String) -> Unit,
     onSearchClick: () -> Unit
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
+
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -37,21 +44,59 @@ fun SearchBar(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Current Location TextField
-            TextField(
-                value = currentLocation,
-                onValueChange = onLocationChange,
-                label = { Text("Current Location") },
+            // Location Input Row
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.LocationOn,
+                    contentDescription = "Location Icon",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                TextField(
+                    value = currentLocation,
+                    onValueChange = onLocationChange,
+                    label = { Text("Current Location") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
-            // Date TextField
-            TextField(
-                value = selectedDate,
-                onValueChange = onDateChange,
-                label = { Text("Date") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            // Date Input Row
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showDatePicker = true }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = "Date Icon",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(
+                    text = if (selectedDate.isEmpty()) "Select Date" else selectedDate,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // Show DatePickerDialog when clicked
+            if (showDatePicker) {
+                DatePickerDialogWrapper(
+                    initialDate = selectedDate,
+                    onDateSelected = { date ->
+                        onDateChange(date)
+                        showDatePicker = false
+                    },
+                    onDismissRequest = {
+                        showDatePicker = false
+                    }
+                )
+            }
 
             // Search Button
             Button(
@@ -69,6 +114,32 @@ fun SearchBar(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun DatePickerDialogWrapper(
+    initialDate: String,
+    onDateSelected: (String) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+    DatePickerDialog(
+        LocalContext.current,
+        { _, selectedYear, selectedMonth, selectedDay ->
+            val formattedDate = "${selectedDay}/${selectedMonth + 1}/${selectedYear}"
+            onDateSelected(formattedDate)
+        },
+        year,
+        month,
+        day
+    ).apply {
+        setOnDismissListener { onDismissRequest() }
+        show()
     }
 }
 

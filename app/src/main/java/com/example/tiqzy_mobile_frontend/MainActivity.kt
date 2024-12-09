@@ -35,28 +35,6 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Composable
-fun HomePage() {
-    Tiqzy_Mobile_FrontEndTheme {
-        Greeting("Android")
-    }
-}
-
-@Composable
-fun ProductPage(){
-    Tiqzy_Mobile_FrontEndTheme {
-        //EventListScreen()
-    }
-}
-
-@Composable
 fun MainScreen(favoritesViewModel: FavoritesViewModel) {
     val navController = rememberNavController()
 

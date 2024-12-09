@@ -29,7 +29,7 @@ fun HomeScreen(navController: NavHostController, favoritesViewModel: FavoritesVi
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            WelcomeAndPreview(
+            HomeContent(
                 navController = navController,
                 favoritesViewModel = favoritesViewModel,
                 currentLocation = currentLocation,
@@ -43,7 +43,7 @@ fun HomeScreen(navController: NavHostController, favoritesViewModel: FavoritesVi
 
 
 @Composable
-fun WelcomeAndPreview(
+fun HomeContent(
     navController: NavController,
     favoritesViewModel: FavoritesViewModel,
     currentLocation: String,
