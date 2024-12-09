@@ -12,14 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.tiqzy_mobile_frontend.ui.navigation.AppNavHost
 import com.example.tiqzy_mobile_frontend.ui.navigation.Screen
 import com.example.tiqzy_mobile_frontend.ui.screens.EventListScreen
 import com.example.tiqzy_mobile_frontend.ui.screens.HomeScreen
 import com.example.tiqzy_mobile_frontend.ui.theme.Tiqzy_Mobile_FrontEndTheme
-import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 
@@ -29,14 +27,41 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val favoritesViewModel: FavoritesViewModel = viewModel()
-            val navController = rememberNavController()
-            AppNavHost(navController = navController, favoritesViewModel = favoritesViewModel)
+
             MainScreen()
+            /*Tiqzy_Mobile_FrontEndTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Greeting(
+                        name = "Android",
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+            }*/
         }
     }
 }
 
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
+}
+
+@Composable
+fun HomePage() {
+    Tiqzy_Mobile_FrontEndTheme {
+        Greeting("Android")
+    }
+}
+
+@Composable
+fun ProductPage(){
+    Tiqzy_Mobile_FrontEndTheme {
+        //EventListScreen()
+    }
+}
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
@@ -48,8 +73,7 @@ fun MainScreen() {
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            modifier = Modifier.padding(innerPadding),
-            favoritesViewModel = TODO()
+            modifier = Modifier.padding(innerPadding)
         )
     }
 }

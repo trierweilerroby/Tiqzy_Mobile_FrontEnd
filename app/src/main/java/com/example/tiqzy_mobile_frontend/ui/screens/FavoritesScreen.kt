@@ -1,18 +1,21 @@
 package com.example.tiqzy_mobile_frontend.ui.screens
 
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
-import com.example.tiqzy_mobile_frontend.ui.components.EventItem
-import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 
 @Composable
-fun FavoritesScreen(navController: NavController, favoritesViewModel: FavoritesViewModel) {
-    LazyColumn {
-        items(favoritesViewModel.favorites) { event ->
-            // You can reuse the EventItem composable here
-            EventItem(event = event, favoritesViewModel = favoritesViewModel)
-        }
+fun FavoritesScreen(navController: NavHostController) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text("Welcome to the TiFavorites Screen!")
     }
 }
