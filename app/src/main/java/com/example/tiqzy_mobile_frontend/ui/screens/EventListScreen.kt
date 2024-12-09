@@ -3,15 +3,17 @@ package com.example.tiqzy_mobile_frontend.ui.screens
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.tiqzy_mobile_frontend.data.model.Event
 import com.example.tiqzy_mobile_frontend.ui.components.EventItem
+import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 
 @Composable
-fun EventListScreen(events: List<Event>) {
+fun EventListScreen(events: List<Event>, favoritesViewModel: FavoritesViewModel) {
     LazyColumn {
         items(events) { event ->
-            EventItem(event = event)
+            EventItem(event = event, favoritesViewModel = favoritesViewModel)
         }
     }
 }
@@ -44,5 +46,25 @@ fun PreviewEventListScreen() {
         )
     )
 
-    EventListScreen(events = mockEvents)
+    // Mock FavoritesViewModel
+    val mockFavoritesViewModel = object : FavoritesViewModel() {
+        private val mockFavorites = mutableStateListOf<Event>()
+        override val favorites: List<Event> get() = mockFavorites
+
+        override fun toggleFavorite(event: Event) {
+            if (mockFavorites.contains(event)) {
+                mockFavorites.remove(event)
+            } else {
+                mockFavorites.add(event)
+            }
+        }
+
+        override fun isFavorite(event: Event): Boolean {
+            return mockFavorites.contains(event)
+        }
+    }
+
+    // Display the EventListScreen with mock data and mock FavoritesViewModel
+    EventListScreen(events = mockEvents, favoritesViewModel = mockFavoritesViewModel)
 }
+
