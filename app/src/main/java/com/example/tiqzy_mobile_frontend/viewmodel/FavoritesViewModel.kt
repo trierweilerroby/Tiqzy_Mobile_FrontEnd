@@ -1,3 +1,5 @@
+package com.example.tiqzy_mobile_frontend.viewmodel
+
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.tiqzy_mobile_frontend.data.model.Event

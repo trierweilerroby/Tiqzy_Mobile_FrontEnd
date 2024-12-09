@@ -8,9 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 
 @Composable
-fun FavoritesScreen(navController: NavHostController) {
+fun FavoritesScreen(navController: NavHostController, favoritesViewModel: FavoritesViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()

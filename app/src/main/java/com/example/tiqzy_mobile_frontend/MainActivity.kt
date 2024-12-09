@@ -12,31 +12,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.tiqzy_mobile_frontend.ui.navigation.AppNavHost
 import com.example.tiqzy_mobile_frontend.ui.navigation.Screen
 import com.example.tiqzy_mobile_frontend.ui.screens.EventListScreen
 import com.example.tiqzy_mobile_frontend.ui.screens.HomeScreen
 import com.example.tiqzy_mobile_frontend.ui.theme.Tiqzy_Mobile_FrontEndTheme
+import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
+            val favoritesViewModel: FavoritesViewModel = viewModel()
 
-            MainScreen()
-            /*Tiqzy_Mobile_FrontEndTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }*/
+            MainScreen(favoritesViewModel = favoritesViewModel)
         }
     }
 }
@@ -62,8 +55,9 @@ fun ProductPage(){
         //EventListScreen()
     }
 }
+
 @Composable
-fun MainScreen() {
+fun MainScreen(favoritesViewModel: FavoritesViewModel) {
     val navController = rememberNavController()
 
     Scaffold(
@@ -73,6 +67,7 @@ fun MainScreen() {
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
+            favoritesViewModel = favoritesViewModel,
             modifier = Modifier.padding(innerPadding)
         )
     }
