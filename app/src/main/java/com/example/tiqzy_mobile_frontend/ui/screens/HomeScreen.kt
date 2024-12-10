@@ -14,6 +14,8 @@ import androidx.navigation.NavHostController
 import com.example.tiqzy_mobile_frontend.ui.components.SearchBar
 import androidx.compose.runtime.remember
 import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 
 @Composable
@@ -70,14 +72,23 @@ fun HomeContent(
             selectedDate = selectedDate,
             onLocationChange = onLocationChange,
             onDateChange = onDateChange,
-            onSearchClick = {
-                // Navigate to the filtered EventListScreen
-                navController.navigate("eventList/$currentLocation/$selectedDate")
+            onSearchClick = { location, date ->
+                if (location.isNotEmpty() && date.isNotEmpty()) {
+                    val encodedLocation = encodeForNavigation(location)
+                    val encodedDate = encodeForNavigation(date)
+                    navController.navigate("eventList/$encodedLocation/$encodedDate")
+                } else {
+                    println("error")
+                }
             }
         )
 
-        // Add the event preview list below the SearchBar
+        // Preview events (optional)
         PreviewEventListScreen(favoritesViewModel = favoritesViewModel)
     }
+}
+
+fun encodeForNavigation(input: String): String {
+    return URLEncoder.encode(input, StandardCharsets.UTF_8.toString())
 }
 

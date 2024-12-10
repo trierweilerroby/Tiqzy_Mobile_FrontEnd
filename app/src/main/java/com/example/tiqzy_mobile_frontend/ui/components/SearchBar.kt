@@ -27,7 +27,7 @@ fun SearchBar(
     selectedDate: String,
     onLocationChange: (String) -> Unit,
     onDateChange: (String) -> Unit,
-    onSearchClick: () -> Unit
+    onSearchClick: (String,String) -> Unit
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
 
@@ -100,7 +100,7 @@ fun SearchBar(
 
             // Search Button
             Button(
-                onClick = onSearchClick,
+                onClick = { onSearchClick(currentLocation, selectedDate)},
                 shape = RoundedCornerShape(4.dp),
                 modifier = Modifier
                     .fillMaxWidth()

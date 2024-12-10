@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -54,6 +55,25 @@ fun EventItem(
                     text = event.title,
                     style = MaterialTheme.typography.titleMedium
                 )
+
+                // Location Row with Icon
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.LocationOn,
+                        contentDescription = "Location Icon",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = event.location,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -130,6 +150,7 @@ fun EventItem(
 
 
 
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewEventItem() {
@@ -139,8 +160,11 @@ fun PreviewEventItem() {
         title = "Sample Event",
         description = "This is a description of the event.",
         date = "2024-12-05",
-        price = 10
+        price = 10,
+        location = "Haarlem"
     )
 
+    val mockFavoritesViewModel = FavoritesViewModel()
+    EventItem(event = mockEvent, favoritesViewModel = mockFavoritesViewModel)
 }
 
