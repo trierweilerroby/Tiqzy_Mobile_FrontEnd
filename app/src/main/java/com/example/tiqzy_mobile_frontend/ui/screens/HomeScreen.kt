@@ -13,6 +13,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.tiqzy_mobile_frontend.ui.components.SearchBar
 import androidx.compose.runtime.remember
+import androidx.navigation.compose.rememberNavController
 import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets

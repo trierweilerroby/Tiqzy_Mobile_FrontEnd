@@ -45,6 +45,11 @@ fun AppNavHost(
         composable(Screen.Tickets.route) { TicketsScreen(navController = navController) }
         composable(Screen.Favorites.route) { FavoritesScreen(navController = navController, favoritesViewModel = favoritesViewModel) }
         composable(Screen.Profile.route) { ProfileScreen(navController = navController) }
+
+        composable(Screen.Login.route) { LoginScreen(navController = navController) }
+        composable(Screen.Signup.route) { SignupScreen(navController = navController) }
+
+
     }
 }
 

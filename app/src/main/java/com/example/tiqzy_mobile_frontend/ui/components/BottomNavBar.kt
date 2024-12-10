@@ -36,6 +36,7 @@ fun BottomNavBar(navController: NavHostController) {
                                 Screen.Tickets -> R.drawable.ticket
                                 Screen.Favorites -> R.drawable.heart
                                 Screen.Profile -> R.drawable.profile
+                                else -> R.drawable.help
                             }
                         ),
                         contentDescription = screen.title,
