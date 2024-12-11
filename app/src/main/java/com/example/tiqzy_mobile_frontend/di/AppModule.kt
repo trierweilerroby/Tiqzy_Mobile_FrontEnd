@@ -1,5 +1,7 @@
 package com.example.tiqzy_mobile_frontend.di
 
+import com.example.tiqzy_mobile_frontend.data.network.AuthApiService
+import com.example.tiqzy_mobile_frontend.data.network.CategoryApiService
 import com.example.tiqzy_mobile_frontend.data.network.EventApiService
 import dagger.Module
 import dagger.Provides
@@ -17,7 +19,7 @@ object AppModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://your-api-base-url.com/") // Replace with your actual base URL
+            .baseUrl("https://your-api-base-url.com/") // Replace with base URL
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
@@ -26,5 +28,17 @@ object AppModule {
     @Singleton
     fun provideEventApiService(retrofit: Retrofit): EventApiService {
         return retrofit.create(EventApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthApiService(retrofit: Retrofit): AuthApiService {
+        return retrofit.create(AuthApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryApiService(retrofit: Retrofit): CategoryApiService {
+        return retrofit.create(CategoryApiService::class.java)
     }
 }

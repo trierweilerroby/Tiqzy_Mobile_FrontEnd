@@ -13,11 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.tiqzy_mobile_frontend.ui.navigation.AppNavHost
 import com.example.tiqzy_mobile_frontend.ui.navigation.Screen
 import com.example.tiqzy_mobile_frontend.ui.screens.EventListScreen
 import com.example.tiqzy_mobile_frontend.ui.screens.HomeScreen
+import com.example.tiqzy_mobile_frontend.ui.screens.OnboardingScreen
 import com.example.tiqzy_mobile_frontend.ui.theme.Tiqzy_Mobile_FrontEndTheme
 import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,10 +39,17 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(favoritesViewModel: FavoritesViewModel) {
     val navController = rememberNavController()
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry.value?.destination?.route
+
+    // Screens without the BottomNavBar
+    val noNavBarScreens = listOf("onboarding", "login", "signup")
 
     Scaffold(
         bottomBar = {
-            BottomNavBar(navController = navController)
+            if (currentRoute !in noNavBarScreens) {
+                BottomNavBar(navController = navController)
+            }
         }
     ) { innerPadding ->
         AppNavHost(

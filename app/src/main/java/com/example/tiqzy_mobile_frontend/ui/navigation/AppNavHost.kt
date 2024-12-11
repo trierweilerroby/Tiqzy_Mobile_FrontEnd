@@ -19,9 +19,11 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route,
+        startDestination = Screen.Onboarding.route,
         modifier = modifier
     ) {
+        composable(Screen.Onboarding.route){ OnboardingScreen(navController = navController) }
+
         composable(Screen.Home.route) {
             HomeScreen(navController = navController, favoritesViewModel = favoritesViewModel)
         }
