@@ -1,19 +1,21 @@
 package com.example.tiqzy_mobile_frontend.ui.navigation
 
-import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.tiqzy_mobile_frontend.ui.screens.*
-
+import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
+    dataStore: DataStore<Preferences>,
     favoritesViewModel: FavoritesViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -22,11 +24,20 @@ fun AppNavHost(
         startDestination = Screen.Onboarding.route,
         modifier = modifier
     ) {
-        composable(Screen.Onboarding.route){ OnboardingScreen(navController = navController) }
-
-        composable(Screen.Home.route) {
-            HomeScreen(navController = navController, favoritesViewModel = favoritesViewModel)
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(navController = navController)
         }
+        // Onboarding Name Screen
+        composable(Screen.OnboardingName.route) {
+            OnboardingNameScreen(navController = navController, dataStore = dataStore)
+        }
+
+        // Home Screen with DataStore
+        composable(Screen.Home.route) {
+            HomeScreen(navController = navController, dataStore = dataStore)
+        }
+
+        // Event List Screen
         composable(
             route = "eventList/{location}/{date}",
             arguments = listOf(
@@ -44,15 +55,24 @@ fun AppNavHost(
                 favoritesViewModel = favoritesViewModel
             )
         }
-        composable(Screen.Tickets.route) { TicketsScreen(navController = navController) }
-        composable(Screen.Favorites.route) { FavoritesScreen(navController = navController, favoritesViewModel = favoritesViewModel) }
-        composable(Screen.Profile.route) { ProfileScreen(navController = navController) }
 
-        composable(Screen.Login.route) { LoginScreen(navController = navController) }
-        composable(Screen.Signup.route) { SignupScreen(navController = navController) }
+        // Other Screens
+        composable(Screen.Tickets.route) {
+            TicketsScreen(navController = navController)
+        }
+        composable(Screen.Favorites.route) {
+            FavoritesScreen(navController = navController, favoritesViewModel = favoritesViewModel)
+        }
+        composable(Screen.Profile.route) {
+            ProfileScreen(navController = navController)
+        }
 
-
+        // Authentication Screens
+        composable(Screen.Login.route) {
+            LoginScreen(navController = navController)
+        }
+        composable(Screen.Signup.route) {
+            SignupScreen(navController = navController)
+        }
     }
 }
-
-

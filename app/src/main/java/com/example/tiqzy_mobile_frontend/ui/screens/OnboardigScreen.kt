@@ -102,7 +102,7 @@ fun OnboardingScreen(navController: NavController) {
                     // Next Button
                     Button(
                         onClick = {
-                            navController.navigate("home")
+                            navController.navigate("onboardingName")
                         },
                         modifier = Modifier
                             .fillMaxWidth()

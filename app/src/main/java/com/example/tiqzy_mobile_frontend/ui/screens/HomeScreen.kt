@@ -1,10 +1,13 @@
 package com.example.tiqzy_mobile_frontend.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,16 +16,31 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.tiqzy_mobile_frontend.ui.components.SearchBar
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.compose.rememberNavController
 import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-
 @Composable
-fun HomeScreen(navController: NavHostController, favoritesViewModel: FavoritesViewModel) {
+fun HomeScreen(navController: NavHostController, dataStore: DataStore<Preferences>) {
+    val nameKey = stringPreferencesKey("user_name")
+    var userName by remember { mutableStateOf("User") }
     val (currentLocation, setCurrentLocation) = remember { mutableStateOf("") }
     val (selectedDate, setSelectedDate) = remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        val savedName = runBlocking {
+            dataStore.data.first()[nameKey] ?: "Customer"
+        }
+        userName = savedName
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -30,25 +48,46 @@ fun HomeScreen(navController: NavHostController, favoritesViewModel: FavoritesVi
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(padding),
+            contentAlignment = Alignment.Center
         ) {
-            HomeContent(
-                navController = navController,
-                favoritesViewModel = favoritesViewModel,
-                currentLocation = currentLocation,
-                selectedDate = selectedDate,
-                onLocationChange = setCurrentLocation,
-                onDateChange = setSelectedDate
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    text = "Welcome $userName!",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(top = 15.dp)
+                )
+
+                HomeContent(
+                    navController = navController,
+                    currentLocation = currentLocation,
+                    selectedDate = selectedDate,
+                    onLocationChange = setCurrentLocation,
+                    onDateChange = setSelectedDate
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Button to Navigate to Event List
+                Button(onClick = {
+                    val encodedLocation = encodeForNavigation(currentLocation)
+                    val encodedDate = encodeForNavigation(selectedDate)
+                    navController.navigate("eventList/$encodedLocation/$encodedDate")
+                }) {
+                    Text("Go to Events")
+                }
+            }
         }
     }
 }
 
-
 @Composable
 fun HomeContent(
     navController: NavController,
-    favoritesViewModel: FavoritesViewModel,
     currentLocation: String,
     selectedDate: String,
     onLocationChange: (String) -> Unit,
@@ -61,11 +100,6 @@ fun HomeContent(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Welcome",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
 
         // Add the SearchBar
         SearchBar(
@@ -84,12 +118,24 @@ fun HomeContent(
             }
         )
 
-        // Preview events (optional)
-        PreviewEventListScreen(favoritesViewModel = favoritesViewModel)
     }
 }
 
 fun encodeForNavigation(input: String): String {
     return URLEncoder.encode(input, StandardCharsets.UTF_8.toString())
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewHomeScreen() {
+    HomeScreen(navController = NavHostController(androidx.compose.ui.platform.LocalContext.current),
+        dataStore = object : DataStore<Preferences> {
+            override val data: kotlinx.coroutines.flow.Flow<Preferences>
+                get() = kotlinx.coroutines.flow.flowOf(androidx.datastore.preferences.core.preferencesOf())
+            override suspend fun updateData(transform: suspend (Preferences) -> Preferences): Preferences {
+                return androidx.datastore.preferences.core.preferencesOf()
+            }
+        }
+    )
 }
 

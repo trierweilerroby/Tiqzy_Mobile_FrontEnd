@@ -11,3 +11,4 @@ interface CategoryApiService {
     @GET("Categories/{id}")
     suspend fun getCategoryById(@Path("id") id: Int): Category
 }
+

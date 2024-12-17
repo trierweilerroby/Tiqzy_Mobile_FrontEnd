@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.animation.core.lint)
+    implementation(libs.androidx.datastore.core.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,6 +77,10 @@ dependencies {
     //nav
     implementation("androidx.compose.material:material:1.5.0")
     implementation("androidx.compose.material3:material3:1.2.0-alpha05")
+
+    //datastore
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+
 
 
 }
