@@ -81,6 +81,10 @@ dependencies {
     //datastore
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
 
+    //load image from URL using coil
+    implementation ("io.coil-kt:coil-compose:2.1.0")
+
+
 
 
 }

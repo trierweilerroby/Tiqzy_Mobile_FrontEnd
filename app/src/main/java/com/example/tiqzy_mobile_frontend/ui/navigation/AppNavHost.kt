@@ -1,6 +1,8 @@
 package com.example.tiqzy_mobile_frontend.ui.navigation
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -10,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.tiqzy_mobile_frontend.ui.screens.*
+import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 
 @Composable
@@ -30,6 +33,10 @@ fun AppNavHost(
         // Onboarding Name Screen
         composable(Screen.OnboardingName.route) {
             OnboardingNameScreen(navController = navController, dataStore = dataStore)
+        }
+
+        composable(Screen.OnboardingCategories.route){
+            OnboardingCategoriesScreen(navController = navController, dataStore = dataStore)
         }
 
         // Home Screen with DataStore

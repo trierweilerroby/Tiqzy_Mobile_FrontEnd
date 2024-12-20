@@ -36,9 +36,9 @@ fun EventListScreen(
     favoritesViewModel: FavoritesViewModel
 ) {
     val events = listOf(
-        Event(1, "Music Festival", "Enjoy live music.", "2024-12-10", 50,"haarlem"),
-        Event(2, "Art Exhibition", "Explore modern art.", "2024-12-12", 10,"haarlem"),
-        Event(3, "Tech Conference", "Discover innovation.", "2024-12-15", 300,"Amsterdam")
+        Event(1, "Music Festival", "Enjoy live music.", "2024-12-10", 50,"haarlem", "https://career-advice.jobs.ac.uk/wp-content/uploads/Netherlands3-e1634207438966-1170x630.jpg.webp"),
+        Event(2, "Art Exhibition", "Explore modern art.", "2024-12-12", 10,"haarlem","https://career-advice.jobs.ac.uk/wp-content/uploads/Netherlands3-e1634207438966-1170x630.jpg.webp"),
+        Event(3, "Tech Conference", "Discover innovation.", "2024-12-15", 300,"Amsterdam","https://career-advice.jobs.ac.uk/wp-content/uploads/Netherlands3-e1634207438966-1170x630.jpg.webp")
     )
     val filteredEvents = events.filter { event ->
         event.location.contains(location, ignoreCase = true) && event.date == date
@@ -91,9 +91,9 @@ fun EventListScreen(
 @Composable
 fun PreviewEventListScreen(favoritesViewModel: FavoritesViewModel) {
     val mockEvents = listOf(
-        Event(1, "Music Festival", "Enjoy live music.", "2024-12-10", 50,"haarlem"),
-        Event(2, "Art Exhibition", "Explore modern art.", "2024-12-12", 10,"haarlem"),
-        Event(3, "Tech Conference", "Discover innovation.", "2024-12-15", 300,"Amsterdam")
+        Event(1, "Music Festival", "Enjoy live music.", "2024-12-10", 50,"haarlem","https://career-advice.jobs.ac.uk/wp-content/uploads/Netherlands3-e1634207438966-1170x630.jpg.webp"),
+        Event(2, "Art Exhibition", "Explore modern art.", "2024-12-12", 10,"haarlem","https://career-advice.jobs.ac.uk/wp-content/uploads/Netherlands3-e1634207438966-1170x630.jpg.webp"),
+        Event(3, "Tech Conference", "Discover innovation.", "2024-12-15", 300,"Amsterdam","https://career-advice.jobs.ac.uk/wp-content/uploads/Netherlands3-e1634207438966-1170x630.jpg.webp")
     )
 
     LazyColumn(

@@ -161,7 +161,8 @@ fun PreviewEventItem() {
         description = "This is a description of the event.",
         date = "2024-12-05",
         price = 10,
-        location = "Haarlem"
+        location = "Haarlem",
+        imageUrl = "https://career-advice.jobs.ac.uk/wp-content/uploads/Netherlands3-e1634207438966-1170x630.jpg.webp"
     )
 
     val mockFavoritesViewModel = FavoritesViewModel()

@@ -111,7 +111,7 @@ fun OnboardingNameScreen(navController: NavController, dataStore: DataStore<Pref
                             dataStore.edit { settings ->
                                 settings[nameKey] = name
                             }
-                            navController.navigate("home")
+                            navController.navigate("onboardingCategories")
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
@@ -128,7 +128,7 @@ fun OnboardingNameScreen(navController: NavController, dataStore: DataStore<Pref
                             dataStore.edit { settings ->
                                 settings.remove(nameKey)
                             }
-                            navController.navigate("home")
+                            navController.navigate("onboardingCategories")
                         }
                     }
                 ) {

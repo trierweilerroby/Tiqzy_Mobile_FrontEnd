@@ -32,14 +32,18 @@ import java.nio.charset.StandardCharsets
 fun HomeScreen(navController: NavHostController, dataStore: DataStore<Preferences>) {
     val nameKey = stringPreferencesKey("user_name")
     var userName by remember { mutableStateOf("User") }
+
+    val categoriesKey = stringPreferencesKey("user_categories")
+    var userCategories by remember { mutableStateOf("") }
+
     val (currentLocation, setCurrentLocation) = remember { mutableStateOf("") }
     val (selectedDate, setSelectedDate) = remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        val savedName = runBlocking {
-            dataStore.data.first()[nameKey] ?: "Customer"
-        }
-        userName = savedName
+
+        userName = dataStore.data.first()[nameKey] ?: "Customer"
+
+        userCategories = dataStore.data.first()[categoriesKey] ?: ""
     }
 
     Scaffold(

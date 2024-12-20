@@ -8,5 +8,6 @@ data class Event (
     val description: String,
     val date: String,
     val price: Int,
-    val location: String
+    val location: String,
+    val imageUrl: String
 )
