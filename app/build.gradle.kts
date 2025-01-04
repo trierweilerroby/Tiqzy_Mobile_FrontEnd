@@ -63,6 +63,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.material.icons.extended)
+
 
     // Retrofit dependencies
     implementation("com.squareup.retrofit2:retrofit:2.9.0") // Core Retrofit library
@@ -76,13 +78,14 @@ dependencies {
 
     //nav
     implementation("androidx.compose.material:material:1.5.0")
-    implementation("androidx.compose.material3:material3:1.2.0-alpha05")
+    implementation("androidx.compose.material3:material3:1.1.0")
 
     //datastore
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
 
     //load image from URL using coil
-    implementation ("io.coil-kt:coil-compose:2.1.0")
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
 
 
 

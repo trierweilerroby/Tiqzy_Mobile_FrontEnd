@@ -5,8 +5,10 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -18,6 +20,7 @@ import com.example.tiqzy_mobile_frontend.ui.theme.Tiqzy_Mobile_FrontEndTheme
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 // Define a singleton DataStore instance for saving user preferences.
@@ -36,11 +39,20 @@ class MainActivity : ComponentActivity() {
                 // Create or retrieve the instance of FavoritesViewModel using ViewModel
                 val favoritesViewModel: FavoritesViewModel = viewModel()
 
+                // Create or retrieve the instance of EventViewModel using ViewModel
+                val eventViewModel: EventViewModel = viewModel()
+
                 // Access the singleton DataStore instance for storing user preferences
                 val dataStore = this@MainActivity.dataStore
 
                 // Call the MainScreen composable function and pass required dependencies
-                MainScreen(favoritesViewModel = favoritesViewModel, dataStore = dataStore)
+                MainScreen(
+                    favoritesViewModel = favoritesViewModel,
+                    eventViewModel = eventViewModel,
+                    dataStore = dataStore
+                )
+                //launch test
+                //Text(text = "App Launches!", modifier = Modifier.fillMaxSize())
             }
         }
     }
@@ -48,7 +60,11 @@ class MainActivity : ComponentActivity() {
 
 // MainScreen is the root composable function that holds the app's navigation and layout.
 @Composable
-fun MainScreen(favoritesViewModel: FavoritesViewModel, dataStore: DataStore<Preferences>) {
+fun MainScreen(
+    favoritesViewModel: FavoritesViewModel,
+    eventViewModel: EventViewModel,
+    dataStore: DataStore<Preferences>
+) {
     // Create a navigation controller to manage navigation between screens
     val navController = rememberNavController()
 
@@ -57,7 +73,7 @@ fun MainScreen(favoritesViewModel: FavoritesViewModel, dataStore: DataStore<Pref
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     // Define screens where the BottomNavBar should NOT appear
-    val noNavBarScreens = listOf("onboarding","onboardingName", "login", "signup")
+    val noNavBarScreens = listOf("onboarding", "onboardingName", "login", "signup")
 
     // Scaffold is the main container providing slots for UI elements like a bottom bar
     Scaffold(
@@ -71,8 +87,9 @@ fun MainScreen(favoritesViewModel: FavoritesViewModel, dataStore: DataStore<Pref
         // AppNavHost manages the navigation and renders the appropriate screens
         AppNavHost(
             navController = navController,
-            dataStore = dataStore,                 // Pass DataStore for user preferences
+            dataStore = dataStore,                   // Pass DataStore for user preferences
             favoritesViewModel = favoritesViewModel, // Pass the FavoritesViewModel
+            //eventViewModel = eventViewModel,         // Pass the EventViewModel
             modifier = Modifier.padding(innerPadding) // Apply padding for content below the AppBar/BottomNavBar
         )
     }

@@ -20,22 +20,24 @@ fun AppNavHost(
     navController: NavHostController,
     dataStore: DataStore<Preferences>,
     favoritesViewModel: FavoritesViewModel,
+    //eventViewModel: EventViewModel,
     modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Onboarding.route,
+        startDestination = "onboarding", //Screen.Onboarding.route,
         modifier = modifier
     ) {
         composable(Screen.Onboarding.route) {
-            OnboardingScreen(navController = navController)
+            Text("onboardingScreen")
+            //OnboardingScreen(navController = navController)
         }
         // Onboarding Name Screen
         composable(Screen.OnboardingName.route) {
             OnboardingNameScreen(navController = navController, dataStore = dataStore)
         }
 
-        composable(Screen.OnboardingCategories.route){
+        composable(Screen.OnboardingCategories.route) {
             OnboardingCategoriesScreen(navController = navController, dataStore = dataStore)
         }
 
@@ -62,6 +64,33 @@ fun AppNavHost(
                 favoritesViewModel = favoritesViewModel
             )
         }
+
+        /* Reservation Screen
+        composable(
+            route = "reservation/{eventName}/{location}/{imageUrl}/{basePrice}",
+            arguments = listOf(
+                navArgument("eventName") { type = NavType.StringType },
+                navArgument("location") { type = NavType.StringType },
+                navArgument("imageUrl") { type = NavType.StringType },
+                navArgument("basePrice") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val eventName = backStackEntry.arguments?.getString("eventName") ?: ""
+            val location = backStackEntry.arguments?.getString("location") ?: ""
+            val imageUrl = backStackEntry.arguments?.getString("imageUrl") ?: ""
+            val basePrice = backStackEntry.arguments?.getString("basePrice")?.toDoubleOrNull() ?: 0.0
+
+            ReservationScreen(
+                eventName = eventName,
+                location = location,
+                imageUrl = imageUrl,
+                basePrice = basePrice,
+                onBackClicked = { navController.popBackStack() },
+                onBuyClicked = {
+                    // Handle Buy button logic, or navigate to a confirmation screen
+                }
+            )
+        }*/
 
         // Other Screens
         composable(Screen.Tickets.route) {

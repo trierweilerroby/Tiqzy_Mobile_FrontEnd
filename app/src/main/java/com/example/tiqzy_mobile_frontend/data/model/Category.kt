@@ -1,6 +1,6 @@
 package com.example.tiqzy_mobile_frontend.data.model
 
-import android.media.Image
+
 
 data class Category (
     val categoryId: Int,
