@@ -1,8 +1,12 @@
 package com.example.tiqzy_mobile_frontend.di
 
+import com.example.tiqzy_mobile_frontend.data.model.Event
 import com.example.tiqzy_mobile_frontend.data.network.AuthApiService
 import com.example.tiqzy_mobile_frontend.data.network.CategoryApiService
 import com.example.tiqzy_mobile_frontend.data.network.EventApiService
+import com.example.tiqzy_mobile_frontend.data.network.EventDeserializer
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,10 +21,18 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit {
+    fun provideGson(): Gson {
+        return GsonBuilder()
+            .registerTypeAdapter(Event::class.java, EventDeserializer()) // Register custom deserializer
+            .create()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(gson: Gson): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://your-api-base-url.com/") // Replace with base URL
-            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("https://api-echo-dev.apps.inholland.hcs-lab.nl/") // Replace with actual base URL
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 

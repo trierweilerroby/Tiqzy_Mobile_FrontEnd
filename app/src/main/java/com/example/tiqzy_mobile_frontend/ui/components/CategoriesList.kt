@@ -82,7 +82,6 @@ fun FlowRow(
 
         measurables.forEach { measurable ->
             val placeable = measurable.measure(constraints)
-            println("Placeable width: ${placeable.width}")
             if (currentWidth + placeable.width > constraints.maxWidth) {
                 rows.add(currentRow.toMutableList())
                 totalHeight += currentRow.maxOf { it.height } + crossAxisSpacing

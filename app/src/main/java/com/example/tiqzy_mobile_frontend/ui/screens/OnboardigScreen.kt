@@ -14,24 +14,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tiqzy_mobile_frontend.R
+import com.example.tiqzy_mobile_frontend.viewmodel.OnboardingViewModel
 
 @Composable
-fun OnboardingScreen(navController: NavController) {
-    var scale by remember { mutableStateOf(0.8f) }
-
-    // Animation for scaling the image
+fun OnboardingScreen(
+    navController: NavController,
+    viewModel: OnboardingViewModel = hiltViewModel()
+) {
+    // Animation state
     val infiniteTransition = rememberInfiniteTransition()
-    scale = infiniteTransition.animateFloat(
+    val scale by infiniteTransition.animateFloat(
         initialValue = 0.8f,
         targetValue = 1.0f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         )
-    ).value
+    )
 
     Scaffold { innerPadding ->
         Box(
@@ -47,6 +50,7 @@ fun OnboardingScreen(navController: NavController) {
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Top Content
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
@@ -81,6 +85,7 @@ fun OnboardingScreen(navController: NavController) {
                     )
                 }
 
+                // Bottom Content
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()

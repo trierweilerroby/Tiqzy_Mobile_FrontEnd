@@ -35,7 +35,8 @@ import kotlinx.coroutines.launch
 fun EventItem(
     event: Event,
     favoritesViewModel: FavoritesViewModel, // Pass the ViewModel here
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit // Callback for click handling
 ) {
     // Observe whether the event is in the favorites list
     val isFavorite = favoritesViewModel.favorites.contains(event)
@@ -45,7 +46,8 @@ fun EventItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { onClick() }, // Navigate on card click
         shape = RoundedCornerShape(8.dp),
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -58,7 +60,7 @@ fun EventItem(
             ) {
                 // Event Image on the left
                 Image(
-                    painter = rememberImagePainter(data = event.imageUrl),
+                    painter = rememberImagePainter(data = event.image),
                     contentDescription = "Event Image",
                     modifier = Modifier
                         .size(100.dp)
@@ -86,11 +88,15 @@ fun EventItem(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = event.location,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        event.venue?.let {
+                            it.city?.let { it1 ->
+                                Text(
+                                    text = it1,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -157,22 +163,4 @@ fun EventItem(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewEventItem() {
-    // Mock data for an event
-    val mockEvent = Event(
-        id = 1,
-        title = "Sample Event",
-        description = "This is a description of the event.",
-        date = "2024-12-05",
-        price = 10,
-        location = "Haarlem",
-        imageUrl = "https://career-advice.jobs.ac.uk/wp-content/uploads/Netherlands3-e1634207438966-1170x630.jpg.webp"
-    )
-
-    val mockFavoritesViewModel = FavoritesViewModel()
-    EventItem(event = mockEvent, favoritesViewModel = mockFavoritesViewModel)
 }

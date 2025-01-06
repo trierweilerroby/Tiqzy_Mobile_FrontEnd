@@ -27,7 +27,8 @@ fun SearchBar(
     selectedDate: String,
     onLocationChange: (String) -> Unit,
     onDateChange: (String) -> Unit,
-    onSearchClick: (String,String) -> Unit
+    onSearchClick: (String,String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
 
