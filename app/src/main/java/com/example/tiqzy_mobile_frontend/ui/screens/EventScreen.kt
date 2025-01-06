@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
@@ -30,6 +32,7 @@ import com.example.tiqzy_mobile_frontend.data.model.Event
 import com.example.tiqzy_mobile_frontend.ui.components.ShareButton
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventScreen(
     navController: NavController,
@@ -44,7 +47,22 @@ fun EventScreen(
         viewModel.fetchEventById(eventId)
     }
 
-    Scaffold { innerPadding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Event Details") },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.navigate("eventList") {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        }
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back to Home")
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(innerPadding)
@@ -66,6 +84,7 @@ fun EventScreen(
         }
     }
 }
+
 
 @Composable
 fun EventDetailsContent(navController: NavController, event: Event) {

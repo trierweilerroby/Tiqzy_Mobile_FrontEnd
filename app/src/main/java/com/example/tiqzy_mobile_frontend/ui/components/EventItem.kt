@@ -26,6 +26,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import com.example.tiqzy_mobile_frontend.data.model.Event
 import kotlinx.coroutines.delay
@@ -34,33 +35,31 @@ import kotlinx.coroutines.launch
 @Composable
 fun EventItem(
     event: Event,
-    favoritesViewModel: FavoritesViewModel, // Pass the ViewModel here
+    favoritesViewModel: FavoritesViewModel,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit // Callback for click handling
+    onClick: () -> Unit
 ) {
-    // Observe whether the event is in the favorites list
-    val isFavorite = favoritesViewModel.favorites.contains(event)
     var showPopup by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    val isFavorite = favoritesViewModel.favorites.contains(event)
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onClick() }, // Navigate on card click
+            .clickable { onClick() },
         shape = RoundedCornerShape(8.dp),
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            // Event Details with Image on the left
             Row(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Event Image on the left
-                Image(
-                    painter = rememberImagePainter(data = event.image),
+                // Event Image
+                AsyncImage(
+                    model = event.image?.url ?: "https://example.com/default.jpg",
                     contentDescription = "Event Image",
                     modifier = Modifier
                         .size(100.dp)
@@ -72,14 +71,12 @@ fun EventItem(
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    // Event name
                     Text(
                         text = event.title,
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
 
-                    // Location Row with Icon
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Filled.LocationOn,
@@ -88,58 +85,46 @@ fun EventItem(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        event.venue?.let {
-                            it.city?.let { it1 ->
-                                Text(
-                                    text = it1,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
+                        event.venue?.city?.let { city ->
+                            Text(
+                                text = city,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Event description
                     Text(
-                        text = event.description,
-                        style = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        text = "From €${event.price / 100.0}",
+                        style = MaterialTheme.typography.bodyMedium
                     )
-
-                    // Event price and duration
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "From €${event.price}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Text(
-                            text = "${event.date}",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
+                    Text(
+                        text = event.date,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
 
-            // Favorite heart in the top-right corner
+            // Favorite Button
             Icon(
                 imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = if (isFavorite) "Unfavorite" else "Favorite",
+                contentDescription = if (isFavorite) "Unfavorite event" else "Favorite event",
                 tint = if (isFavorite) androidx.compose.ui.graphics.Color.Red else MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
                     .clickable {
-                        favoritesViewModel.toggleFavorite(event) // Add/remove from favorites
+                        val message = if (favoritesViewModel.favorites.contains(event)) {
+                            "Removed from Favorites"
+                        } else {
+                            "Added to Favorites"
+                        }
+                        favoritesViewModel.toggleFavorite(event)
                         showPopup = true
                         coroutineScope.launch {
-                            delay(1500) // Dismiss popup after 1.5 seconds
+                            delay(1500)
                             showPopup = false
                         }
                     }
@@ -154,7 +139,7 @@ fun EventItem(
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = if (isFavorite) "Removed from Favorites" else "Added to Favorites",
+                        text = if (isFavorite) "Added to Favorites" else "Removed from Favorites",
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(8.dp),
                         color = MaterialTheme.colorScheme.onPrimary
