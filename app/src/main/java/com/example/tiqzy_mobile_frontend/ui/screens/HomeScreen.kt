@@ -45,9 +45,12 @@ fun HomeScreen(
     val (currentLocation, setCurrentLocation) = remember { mutableStateOf("") }
     val (selectedDate, setSelectedDate) = remember { mutableStateOf("") }
 
-    // Load user data and selected categories
+    // Check if user is logged in and load user data
+    var isLoggedIn by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        userName = dataStore.data.first()[nameKey] ?: "Customer"
+        val storedName = dataStore.data.first()[nameKey]
+        isLoggedIn = !storedName.isNullOrEmpty()
+        userName = storedName ?: "Customer"
 
         val selectedCategoriesString = dataStore.data.first()[categoriesKey] ?: ""
         userSelectedCategories.value = selectedCategoriesString.split(",").map { it.trim() }
@@ -76,7 +79,7 @@ fun HomeScreen(
             ) {
                 // Welcome message
                 Text(
-                    text = "Welcome $userName!",
+                    text = if (isLoggedIn) "Welcome back, $userName!" else "Welcome $userName!",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(top = 15.dp)
                 )
@@ -98,6 +101,7 @@ fun HomeScreen(
         }
     }
 }
+
 
 @Composable
 fun HomeSearch(

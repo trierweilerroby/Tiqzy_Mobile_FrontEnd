@@ -1,7 +1,6 @@
 package com.example.tiqzy_mobile_frontend.data.network
 
 import com.example.tiqzy_mobile_frontend.data.model.Event
-import com.example.tiqzy_mobile_frontend.data.model.Image
 import com.example.tiqzy_mobile_frontend.data.model.Venue
 import com.google.gson.*
 import java.lang.reflect.Type
@@ -23,16 +22,14 @@ class EventDeserializer : JsonDeserializer<Event> {
 
         // Handle venue field
         val venueElement = jsonObject.get("venue")
-        val venue = venueElement?.let {
-            context.deserialize<Venue>(venueElement, Venue::class.java)
-        }
+        val venue = context.deserialize<Venue>(venueElement, Venue::class.java)
 
-        // Handle image field with error handling for non-object values
+        // Handle image field
         val imageElement = jsonObject.get("image")
-        val image = if (imageElement != null && imageElement.isJsonObject) {
-            context.deserialize(imageElement, Image::class.java)
+        val imageUrl = if (imageElement.isJsonObject) {
+            imageElement.asJsonObject.get("url").asString
         } else {
-            null // Handle cases where `image` is `false` or unexpected
+            null // Handle cases where `image` is `false`
         }
 
         return Event(
@@ -42,7 +39,7 @@ class EventDeserializer : JsonDeserializer<Event> {
             date = date,
             price = price,
             venue = venue,
-            image = image
+            imageUrl = imageUrl // Use the updated imageUrl field
         )
     }
 }

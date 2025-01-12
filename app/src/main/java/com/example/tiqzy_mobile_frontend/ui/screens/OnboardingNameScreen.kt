@@ -1,11 +1,5 @@
 package com.example.tiqzy_mobile_frontend.ui.screens
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -13,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -34,19 +27,7 @@ fun OnboardingNameScreen(navController: NavController, dataStore: DataStore<Pref
     val nameKey = stringPreferencesKey("user_name")
     val scope = rememberCoroutineScope()
 
-
     var name by remember { mutableStateOf("") }
-    var scale by remember { mutableStateOf(0.8f) }
-    // Animation for scaling the image
-    val infiniteTransition = rememberInfiniteTransition()
-    scale = infiniteTransition.animateFloat(
-        initialValue = 0.8f,
-        targetValue = 1.0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    ).value
 
     Scaffold { innerPadding ->
         Box(
@@ -60,12 +41,11 @@ fun OnboardingNameScreen(navController: NavController, dataStore: DataStore<Pref
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(16.dp)
             ) {
-                // Animated Image
+                // Static Image
                 Image(
                     painter = painterResource(id = R.drawable.onboarding),
                     contentDescription = "Illustration",
                     modifier = Modifier
-                        .scale(scale)
                         .size(200.dp)
                 )
                 // Header Text
@@ -94,7 +74,7 @@ fun OnboardingNameScreen(navController: NavController, dataStore: DataStore<Pref
                 ) {
                     // Progress Bar
                     LinearProgressIndicator(
-                        progress = { 2f / 3 },
+                        progress = 2f / 3,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(12.dp),
@@ -103,7 +83,7 @@ fun OnboardingNameScreen(navController: NavController, dataStore: DataStore<Pref
                     )
                 }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 // Next Button
                 Button(
                     onClick = {
@@ -138,4 +118,3 @@ fun OnboardingNameScreen(navController: NavController, dataStore: DataStore<Pref
         }
     }
 }
-

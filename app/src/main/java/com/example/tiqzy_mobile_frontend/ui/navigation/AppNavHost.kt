@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -15,6 +16,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.tiqzy_mobile_frontend.data.database.dataStore
+import com.example.tiqzy_mobile_frontend.data.model.Event
 import com.example.tiqzy_mobile_frontend.ui.screens.*
 import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 
@@ -48,12 +51,19 @@ fun AppNavHost(
         composable("profile") {
             ProfileScreen(navController = navController)
         }
+        composable("tickets") {
+            TicketsScreen(navController = navController)
+        }
         composable("login") {
             LoginScreen(navController = navController)
         }
         composable("signup") {
-            SignupScreen(navController = navController)
+            SignupScreen(
+                navController = navController,
+                dataStore = LocalContext.current.dataStore
+            )
         }
+
         composable(
             route = "eventList?date={date}&location={location}",
             arguments = listOf(
@@ -78,6 +88,14 @@ fun AppNavHost(
             val eventId = backStackEntry.arguments?.getInt("eventId") ?: 0
             EventScreen(navController, eventId)
         }
+
+        composable("booking/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+            if (eventId != null) {
+                BookingScreen(navController, eventId)
+            }
+        }
+
 
     }
 }

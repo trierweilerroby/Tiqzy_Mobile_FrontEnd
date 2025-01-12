@@ -9,9 +9,11 @@ interface EventApiService {
     @GET("tickets/tickets")
     suspend fun getEvents(
         @Query("date") date: String? = null,
-        @Query("venueCity") venueCity: String? = null
+        @Query("venueCity") venueCity: String? = null,
+        @Query("categories") categories: String? = null,
+        @Query("sort") sort: String? = null
     ): List<Event>
 
     @GET("tickets/tickets/{id}")
-    suspend fun getEventById(@Query("id") id: Int): Event
+    suspend fun getEventById(@Path("id") id: Int): Event
 }

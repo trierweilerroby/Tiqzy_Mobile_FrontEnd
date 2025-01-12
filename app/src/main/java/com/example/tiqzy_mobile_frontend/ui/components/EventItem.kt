@@ -59,7 +59,7 @@ fun EventItem(
             ) {
                 // Event Image
                 AsyncImage(
-                    model = event.image?.url ?: "https://example.com/default.jpg",
+                    model = event.imageUrl ?: "https://example.com/default.jpg",
                     contentDescription = "Event Image",
                     modifier = Modifier
                         .size(100.dp)
@@ -97,7 +97,7 @@ fun EventItem(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "From €${event.price / 100.0}",
+                        text = "From €${event.price}",
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(

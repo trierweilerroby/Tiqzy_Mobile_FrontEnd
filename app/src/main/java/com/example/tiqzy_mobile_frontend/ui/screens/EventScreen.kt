@@ -2,20 +2,28 @@ package com.example.tiqzy_mobile_frontend.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,13 +39,17 @@ import coil.compose.AsyncImage
 import com.example.tiqzy_mobile_frontend.data.model.Event
 import com.example.tiqzy_mobile_frontend.ui.components.ShareButton
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
+import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventScreen(
     navController: NavController,
     eventId: Int,
-    viewModel: EventViewModel = hiltViewModel()
+    viewModel: EventViewModel = hiltViewModel(),
+    favoritesViewModel: FavoritesViewModel = hiltViewModel()
 ) {
     // Observe the selected event
     val event by viewModel.selectedEvent.collectAsState()
@@ -70,7 +82,7 @@ fun EventScreen(
             contentAlignment = Alignment.Center
         ) {
             if (event != null) {
-                EventDetailsContent(navController = navController, event = event!!)
+                EventDetailsContent(navController = navController, event = event!!, favoritesViewModel = favoritesViewModel)
             } else {
                 Text(
                     text = "Loading...",
@@ -87,7 +99,15 @@ fun EventScreen(
 
 
 @Composable
-fun EventDetailsContent(navController: NavController, event: Event) {
+fun EventDetailsContent(
+    navController: NavController,
+    event: Event,
+    favoritesViewModel: FavoritesViewModel = hiltViewModel()
+) {
+    val isFavorite = favoritesViewModel.isFavorite(event)
+    var showPopup by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -95,41 +115,38 @@ fun EventDetailsContent(navController: NavController, event: Event) {
             .padding(16.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        // Event Image Section
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd) {
-            AsyncImage(
-                model = event.image?.url,
-                contentDescription = "Event Image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(bottom = 8.dp)
-            )
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
-                    tint = Color.Black
-                )
-            }
-        }
+        AsyncImage(
+            model = event.imageUrl,
+            contentDescription = "Event Image",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(bottom = 8.dp)
+        )
 
-        // Action Buttons and Event Details
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /* Handle like */ }) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Like",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+            Icon(
+                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                contentDescription = if (isFavorite) "Unfavorite event" else "Favorite event",
+                tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clickable {
+                        favoritesViewModel.toggleFavorite(event)
+                        showPopup = true
+                        coroutineScope.launch {
+                            delay(1500)
+                            showPopup = false
+                        }
+                    }
+            )
+
             IconButton(onClick = { /* Handle location */ }) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
@@ -137,33 +154,32 @@ fun EventDetailsContent(navController: NavController, event: Event) {
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
+
             ShareButton(eventLink = "https://www.example.com/event/${event.id}")
         }
 
-        // Event Title and Details
         Text(
             text = event.title,
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(top = 8.dp)
         )
-        event.venue?.let {
-            it.city?.let { it1 ->
-                Text(
-                    text = it1,
-                    style = TextStyle(fontSize = 16.sp, color = Color.Gray),
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
+
+        event.venue?.city?.let { city ->
+            Text(
+                text = city,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 4.dp)
+            )
         }
+
         Text(
-            text = "from ${event.price / 100.0}€", // Convert price to Euros
+            text = "From €${event.price / 100.0}",
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(top = 4.dp)
         )
 
-        // Check Availability Button
         Button(
-            onClick = { /* Handle check availability */ },
+            onClick = { navController.navigate("booking/${event.id}") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp)
@@ -171,14 +187,27 @@ fun EventDetailsContent(navController: NavController, event: Event) {
             Text("Check availability")
         }
 
-        // Description Section
         Text(
             text = event.description,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .background(color = Color(0xFFEEF5FF))
-                .padding(8.dp)
+            modifier = Modifier.padding(8.dp)
         )
+
+        if (showPopup) {
+            Surface(
+                shape = RoundedCornerShape(4.dp),
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = if (isFavorite) "Added to Favorites" else "Removed from Favorites",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(8.dp),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
     }
 }
-

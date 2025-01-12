@@ -3,14 +3,11 @@ package com.example.tiqzy_mobile_frontend.data.repository
 import com.example.tiqzy_mobile_frontend.data.model.Category
 import com.example.tiqzy_mobile_frontend.data.model.CategoryUrls
 import com.example.tiqzy_mobile_frontend.data.model.Event
-import com.example.tiqzy_mobile_frontend.data.model.Image
-import com.example.tiqzy_mobile_frontend.data.model.ImageSize
-import com.example.tiqzy_mobile_frontend.data.model.Sizes
 import com.example.tiqzy_mobile_frontend.data.model.Venue
 import com.example.tiqzy_mobile_frontend.data.network.EventApiService
 import javax.inject.Inject
 
- class EventRepository @Inject constructor(
+class EventRepository @Inject constructor(
     private val eventApiService: EventApiService
 ) {
     suspend fun fetchEvents(date: String? = null, venueCity: String? = null): List<Event> {
@@ -26,18 +23,48 @@ import javax.inject.Inject
         }
     }
 
-    suspend fun fetchEventById(eventId: Int): Event {
+    suspend fun fetchEventById(eventId: Int): Event? {
         return try {
             println("Fetching event with ID: $eventId from API...")
             eventApiService.getEventById(id = eventId)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            println("Fetching default event for ID: $eventId due to API failure.")
-            fetchDefaultEventById(eventId)
+        } catch (e: retrofit2.HttpException) {
+            if (e.code() == 404) {
+                println("Event ID $eventId not found on API. Falling back to all events.")
+                val allEvents = eventApiService.getEvents()
+                allEvents.find { it.id == eventId }
+            } else {
+                throw e
+            }
         }
     }
 
-    private suspend fun fetchDefaultEventById(eventId: Int): Event {
+    suspend fun fetchSortedEvents(sortBy: String): List<Event> {
+        return try {
+            println("Fetching events sorted by: $sortBy")
+            val events = eventApiService.getEvents(sort = sortBy)
+            println("Fetched sorted events: $events")
+            events
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println("Error fetching sorted events, returning empty list.")
+            emptyList()
+        }
+    }
+
+
+    suspend fun fetchEventsByCategory(categories: List<String>): List<Event> {
+        return try {
+            val categoriesQuery = categories.joinToString(",")
+            println("Fetching events by categories: $categoriesQuery")
+            eventApiService.getEvents(categories = categoriesQuery)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList() // Return an empty list in case of an error
+        }
+    }
+
+
+    private fun fetchDefaultEventById(eventId: Int): Event {
         val defaultVenue = Venue(
             city = "Amsterdam",
             address = "Dam Square",
@@ -45,21 +72,6 @@ import javax.inject.Inject
             geoLat = 52.374,
             geoLng = 4.897,
             zip = "1012"
-        )
-
-        val defaultImage = Image(
-            url = "https://example.com/default.jpg",
-            id = 1,
-            extension = "jpg",
-            width = 400,
-            height = 400,
-            filesize = 12345,
-            sizes = Sizes(
-                medium = ImageSize(300, 300, "image/jpeg", 12345, "https://example.com/default-medium.jpg"),
-                thumbnail = ImageSize(150, 150, "image/jpeg", 12345, "https://example.com/default-thumb.jpg"),
-                woocommerce_thumbnail = null,
-                woocommerce_gallery_thumbnail = null
-            )
         )
 
         val defaultCategory = Category(
@@ -87,12 +99,12 @@ import javax.inject.Inject
             date = "2025-01-01",
             price = 5000 + (eventId * 1000), // Differentiating price based on ID
             venue = defaultVenue,
-            image = defaultImage,
+            imageUrl = "https://example.com/default.jpg",
             categories = listOf(defaultCategory)
         )
     }
 
-    private suspend fun getDefaultEvents(): List<Event> {
+    private fun getDefaultEvents(): List<Event> {
         return listOf(
             fetchDefaultEventById(1),
             fetchDefaultEventById(2)

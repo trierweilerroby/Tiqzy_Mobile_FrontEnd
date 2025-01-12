@@ -1,13 +1,11 @@
 package com.example.tiqzy_mobile_frontend.ui.screens
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -25,17 +23,6 @@ fun OnboardingScreen(
     navController: NavController,
     viewModel: OnboardingViewModel = hiltViewModel()
 ) {
-    // Animation state
-    val infiniteTransition = rememberInfiniteTransition()
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 0.8f,
-        targetValue = 1.0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -55,12 +42,11 @@ fun OnboardingScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Animated Image
+                    // Static Image
                     Image(
                         painter = painterResource(id = R.drawable.onboarding),
                         contentDescription = "Illustration",
                         modifier = Modifier
-                            .scale(scale)
                             .size(200.dp)
                     )
 
@@ -121,10 +107,3 @@ fun OnboardingScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewOnboardingScreen() {
-    MaterialTheme {
-        OnboardingScreen(navController = rememberNavController())
-    }
-}

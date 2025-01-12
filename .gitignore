@@ -1,2 +1,5 @@
 
 /.gradle
+*.lock
+/.gradle
+local.properties
