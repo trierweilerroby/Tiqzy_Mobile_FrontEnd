@@ -18,10 +18,10 @@ import com.example.tiqzy_mobile_frontend.ui.theme.Tiqzy_Mobile_FrontEndTheme
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.example.tiqzy_mobile_frontend.data.database.dataStore
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_prefs")
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

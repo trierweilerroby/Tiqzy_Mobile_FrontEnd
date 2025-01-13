@@ -94,8 +94,8 @@ fun ProfileMenuSection(navController: NavController) {
         )
         ProfileMenuItem(
             icon = R.drawable.clock,
-            title = "Past Orders",
-            onClick = { navController.navigate("pastOrders") }
+            title = "All Orders",
+            onClick = { navController.navigate("orders") }
         )
         ProfileMenuItem(
             icon = R.drawable.payment,

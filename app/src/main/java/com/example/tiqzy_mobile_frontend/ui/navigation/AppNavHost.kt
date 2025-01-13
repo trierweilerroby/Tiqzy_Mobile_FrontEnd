@@ -1,23 +1,16 @@
 package com.example.tiqzy_mobile_frontend.ui.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.tiqzy_mobile_frontend.data.database.dataStore
-import com.example.tiqzy_mobile_frontend.data.model.Event
 import com.example.tiqzy_mobile_frontend.ui.screens.*
 import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 
@@ -52,7 +45,9 @@ fun AppNavHost(
             ProfileScreen(navController = navController)
         }
         composable("tickets") {
-            TicketsScreen(navController = navController)
+            TicketsScreen(
+                navController = navController,
+                dataStore = LocalContext.current.dataStore)
         }
         composable("login") {
             LoginScreen(navController = navController)
@@ -95,6 +90,7 @@ fun AppNavHost(
                 BookingScreen(navController, eventId)
             }
         }
+
 
 
     }

@@ -102,9 +102,14 @@ fun SignupScreen(
             Button(
                 onClick = {
                     scope.launch {
-                        println("DataStore instance: $dataStore")
-                        signupViewModel.storeUserData(fullName, email, phoneNumber, password)
-                        navController.navigate("home")
+                        try {
+                            println("Attempting to store user data")
+                            signupViewModel.storeUserData(fullName, email, phoneNumber, password)
+                            println("User data stored successfully")
+                            navController.navigate("home")
+                        } catch (e: Exception) {
+                            println("Error in Sign Up process: ${e.message}")
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

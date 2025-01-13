@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tiqzy_mobile_frontend.ui.components.ExploreCategories
 import com.example.tiqzy_mobile_frontend.ui.components.SearchBar
+import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import com.example.tiqzy_mobile_frontend.viewmodel.OnboardingViewModel
 import kotlinx.coroutines.flow.first
 import java.net.URLEncoder
@@ -32,7 +33,8 @@ import java.nio.charset.StandardCharsets
 fun HomeScreen(
     navController: NavHostController,
     dataStore: DataStore<Preferences>,
-    viewModel: OnboardingViewModel = hiltViewModel()
+    viewModel: OnboardingViewModel = hiltViewModel(),
+    eventViewModel: EventViewModel = hiltViewModel()
 ) {
     val nameKey = stringPreferencesKey("user_name")
     var userName by remember { mutableStateOf("User") }
@@ -44,6 +46,8 @@ fun HomeScreen(
 
     val (currentLocation, setCurrentLocation) = remember { mutableStateOf("") }
     val (selectedDate, setSelectedDate) = remember { mutableStateOf("") }
+
+    var filteredCategories by remember { mutableStateOf(categories) }
 
     // Check if user is logged in and load user data
     var isLoggedIn by remember { mutableStateOf(false) }
@@ -61,6 +65,19 @@ fun HomeScreen(
         val selected = categories.filter { userSelectedCategories.value.contains(it.name) }
         val remaining = categories.filterNot { userSelectedCategories.value.contains(it.name) }
         selected + remaining
+    }
+
+    // Filter categories based on location and date
+    LaunchedEffect(currentLocation, selectedDate) {
+        filteredCategories = if (currentLocation.isNotEmpty() || selectedDate.isNotEmpty()) {
+            categories.filter { category ->
+                val matchesLocation = currentLocation.isEmpty() || category.name.contains(currentLocation, ignoreCase = true)
+                val matchesDate = selectedDate.isEmpty()
+                matchesLocation && matchesDate
+            }
+        } else {
+            categories
+        }
     }
 
     Scaffold(
@@ -148,21 +165,4 @@ fun HomeContent(sortedCategories: List<com.example.tiqzy_mobile_frontend.ui.comp
     }
 }
 
-fun encodeForNavigation(input: String): String {
-    return URLEncoder.encode(input, StandardCharsets.UTF_8.toString())
-}
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewHomeScreen() {
-    HomeScreen(
-        navController = rememberNavController(),
-        dataStore = object : DataStore<Preferences> {
-            override val data: kotlinx.coroutines.flow.Flow<Preferences>
-                get() = kotlinx.coroutines.flow.flowOf(androidx.datastore.preferences.core.preferencesOf())
-            override suspend fun updateData(transform: suspend (Preferences) -> Preferences): Preferences {
-                return androidx.datastore.preferences.core.preferencesOf()
-            }
-        }
-    )
-}

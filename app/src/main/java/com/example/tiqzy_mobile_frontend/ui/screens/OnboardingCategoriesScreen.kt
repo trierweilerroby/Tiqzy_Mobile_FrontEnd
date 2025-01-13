@@ -77,7 +77,6 @@ fun OnboardingCategoriesScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(230.dp))
 
              //Categories List Component
             CategoriesList(

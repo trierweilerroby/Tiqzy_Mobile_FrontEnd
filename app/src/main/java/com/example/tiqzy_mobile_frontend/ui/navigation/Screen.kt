@@ -13,6 +13,6 @@ sealed class Screen(val route: String, val title: String) {
     object EventList : Screen("eventList", "EventList")
     object Event : Screen("event", "Event")
     object Booking : Screen("booking", "Booking")
-
+    object Order : Screen("order", "Order")
 
 }

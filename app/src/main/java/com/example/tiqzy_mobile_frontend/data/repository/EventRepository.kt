@@ -52,7 +52,7 @@ class EventRepository @Inject constructor(
     }
 
 
-    suspend fun fetchEventsByCategory(categories: List<String>): List<Event> {
+   suspend fun fetchEventsByCategory(categories: List<String>): List<Event> {
         return try {
             val categoriesQuery = categories.joinToString(",")
             println("Fetching events by categories: $categoriesQuery")
@@ -61,7 +61,7 @@ class EventRepository @Inject constructor(
             e.printStackTrace()
             emptyList() // Return an empty list in case of an error
         }
-    }
+   }
 
 
     private fun fetchDefaultEventById(eventId: Int): Event {

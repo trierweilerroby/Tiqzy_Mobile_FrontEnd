@@ -19,6 +19,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +43,8 @@ import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,7 +107,7 @@ fun EventDetailsContent(
     event: Event,
     favoritesViewModel: FavoritesViewModel = hiltViewModel()
 ) {
-    val isFavorite = favoritesViewModel.isFavorite(event)
+    val isFavorite by remember { derivedStateOf { favoritesViewModel.isFavorite(event) } }
     var showPopup by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -138,6 +141,11 @@ fun EventDetailsContent(
                 modifier = Modifier
                     .padding(8.dp)
                     .clickable {
+                        val message = if (favoritesViewModel.favorites.contains(event)) {
+                            "Removed from Favorites"
+                        } else {
+                            "Added to Favorites"
+                        }
                         favoritesViewModel.toggleFavorite(event)
                         showPopup = true
                         coroutineScope.launch {
@@ -173,7 +181,7 @@ fun EventDetailsContent(
         }
 
         Text(
-            text = "From €${event.price / 100.0}",
+            text = "From €${event.price}",
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(top = 4.dp)
         )

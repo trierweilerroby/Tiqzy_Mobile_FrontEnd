@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.*
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,22 +44,30 @@ fun CategoriesList(
 }
 
 @Composable
-fun CategoryChip(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    Button(
+fun CategoryChip(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
-            contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.primary
-        ),
-        border = if (!isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.primary) else null,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-        modifier = Modifier
-            .wrapContentWidth()
-            .wrapContentHeight()
-            .padding(4.dp)
+        shape = RoundedCornerShape(24.dp),
+        color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp).height(50.dp),
     ) {
-        Text(text = text, style = TextStyle(fontSize = 12.sp))
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Text(
+                text = text,
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.primary
+                )
+            )
+        }
     }
 }
 

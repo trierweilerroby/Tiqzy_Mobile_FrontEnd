@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,20 +31,13 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookingScreen(navController: NavHostController,
-                  eventId: Int,
-                  viewModel: EventViewModel = hiltViewModel()
+fun BookingScreen(
+    navController: NavHostController,
+    eventId: Int,
+    viewModel: EventViewModel = hiltViewModel()
 ) {
-
-    // Observe the selected event
     val event by viewModel.selectedEvent.collectAsState()
-
-    val categories = viewModel.categories.collectAsState(initial = emptyList())
-
-    // Fetch the event when the screen is loaded
-    LaunchedEffect(eventId) {
-        viewModel.fetchEventById(eventId)
-    }
+    val context = LocalContext.current
 
     var selectedDate by remember { mutableStateOf("") }
     var selectedTimeSlot by remember { mutableStateOf("") }
@@ -51,7 +45,12 @@ fun BookingScreen(navController: NavHostController,
     var discountCode by remember { mutableStateOf(TextFieldValue()) }
     val basePrice = 16.95
 
-    val context = LocalContext.current
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+
+    // Fetch the event when the screen is loaded
+    LaunchedEffect(eventId) {
+        viewModel.fetchEventById(eventId)
+    }
 
     Scaffold(
         topBar = {
@@ -61,8 +60,7 @@ fun BookingScreen(navController: NavHostController,
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.Black
+                            contentDescription = "Back"
                         )
                     }
                 }
@@ -74,139 +72,146 @@ fun BookingScreen(navController: NavHostController,
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween, // Use SpaceBetween to distribute space
             horizontalAlignment = Alignment.Start
         ) {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd) {
+            // Top Section (Image and Event Info)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
                 AsyncImage(
                     model = event?.imageUrl,
                     contentDescription = "Event Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(bottom = 8.dp)
+                        .height(150.dp) // Reduced height
+                )
+
+                Text(
+                    text = event?.title ?: "Event Title",
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1 // Limit lines to save space
+                )
+
+                Text(
+                    text = event?.venue?.address ?: "Event Location",
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1
                 )
             }
 
-            // Event Title
-            Text(
-                text = "Lovers Canal Cruise",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            // Event Location
-            Text(
-                text = "Amsterdam Central Station",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            // Date Picker
-            OutlinedTextField(
-                value = selectedDate,
-                onValueChange = {},
-                readOnly = true,
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("Date") },
-                trailingIcon = {
-                    IconButton(onClick = {
-                        val calendar = Calendar.getInstance()
-                        val datePickerDialog = DatePickerDialog(
-                            context,
-                            { _, year, month, dayOfMonth ->
-                                selectedDate = "$dayOfMonth/${month + 1}/$year"
-                            },
-                            calendar.get(Calendar.YEAR),
-                            calendar.get(Calendar.MONTH),
-                            calendar.get(Calendar.DAY_OF_MONTH)
-                        )
-                        datePickerDialog.show()
-                    }) {
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Date")
-                    }
-                }
-            )
-
-            // Time Slot Dropdown
-            var expanded by remember { mutableStateOf(false) }
-            OutlinedTextField(
-                value = selectedTimeSlot,
-                onValueChange = {},
-                readOnly = true,
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("Time Slot") },
-                trailingIcon = {
-                    IconButton(onClick = { expanded = !expanded }) {
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Time Slot")
-                    }
-                }
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
+            // Middle Section (Date, Time, Count, Discount)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.Start
             ) {
-                listOf("10:00 AM", "12:00 PM", "02:00 PM", "04:00 PM").forEach { time ->
-                    DropdownMenuItem(
-                        text = { Text(time) },
-                        onClick = {
-                            selectedTimeSlot = time
-                            expanded = false
+                OutlinedTextField(
+                    value = selectedDate,
+                    onValueChange = {},
+                    readOnly = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Date") },
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            val calendar = Calendar.getInstance()
+                            DatePickerDialog(
+                                context,
+                                { _, year, month, dayOfMonth ->
+                                    selectedDate = "$dayOfMonth/${month + 1}/$year"
+                                },
+                                calendar.get(Calendar.YEAR),
+                                calendar.get(Calendar.MONTH),
+                                calendar.get(Calendar.DAY_OF_MONTH)
+                            ).show()
+                        }) {
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Date")
+                        }
+                    }
+                )
+
+
+
+                Box {
+                    OutlinedTextField(
+                        value = selectedTimeSlot,
+                        onValueChange = {},
+                        readOnly = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Time Slot") },
+                        trailingIcon = {
+                            IconButton(onClick = { isDropdownExpanded = true }) {
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Time Slot")
+                            }
                         }
                     )
-                }
-            }
 
-            // Adult Counter
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Adults", style = MaterialTheme.typography.bodyLarge)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { if (adultCount > 1) adultCount-- }) {
-                        Icon(
-                            imageVector = Icons.Default.Remove,
-                            contentDescription = "Decrease"
-                        )
-                    }
-                    Text(text = "$adultCount", style = MaterialTheme.typography.bodyLarge)
-                    IconButton(onClick = { adultCount++ }) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Increase"
-                        )
+                    DropdownMenu(
+                        expanded = isDropdownExpanded,
+                        onDismissRequest = { isDropdownExpanded = false },
+                        modifier = Modifier.fillMaxWidth() // Ensures the dropdown matches the text field's width
+                    ) {
+                        listOf("10:00 AM", "12:00 PM", "02:00 PM", "04:00 PM").forEach { time ->
+                            DropdownMenuItem(
+                                text = { Text(time) },
+                                onClick = {
+                                    selectedTimeSlot = time // Update the selected time slot
+                                    isDropdownExpanded = false // Close the dropdown menu
+                                }
+                            )
+                        }
                     }
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Adults", style = MaterialTheme.typography.bodyMedium)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = { if (adultCount > 1) adultCount-- }) {
+                            Icon(Icons.Default.Remove, contentDescription = "Decrease")
+                        }
+                        Text(text = "$adultCount", style = MaterialTheme.typography.bodyMedium)
+                        IconButton(onClick = { adultCount++ }) {
+                            Icon(Icons.Default.Add, contentDescription = "Increase")
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = discountCode,
+                    onValueChange = { discountCode = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Discount Code") }
+                )
             }
 
-            // Discount Code
-            OutlinedTextField(
-                value = discountCode,
-                onValueChange = { discountCode = it },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("Discount Code") }
-            )
-
-            // Total Price
-            val totalPrice = basePrice * adultCount
-            Text(
-                text = "Total: €${"%.2f".format(totalPrice)}",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-
-            // Buy Button
-            Button(
-                onClick = { /* Handle Buy */ },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
+            // Bottom Section (Price and Button)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Buy")
+                val totalPrice = basePrice * adultCount
+                Text(
+                    text = "Total: €${"%.2f".format(totalPrice)}",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+
+                Button(
+                    onClick = { /* Handle Buy */ },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Buy")
+                }
             }
         }
     }

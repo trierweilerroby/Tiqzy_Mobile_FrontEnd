@@ -47,8 +47,10 @@ fun BottomNavBar(navController: NavHostController) {
                 selected = currentRoute == screen.route,
                 onClick = {
                     if (currentRoute != screen.route) {
+                        println("Navigating to ${screen.title}")
                         navController.navigate(screen.route) {
-                            popUpTo(navController.graph.startDestinationId) {
+                            println("navigating.... ${screen.route}")
+                            popUpTo("home") {
                                 saveState = true
                             }
                             launchSingleTop = true

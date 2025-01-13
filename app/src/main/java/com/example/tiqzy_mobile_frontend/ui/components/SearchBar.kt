@@ -59,7 +59,7 @@ fun SearchBar(
                 TextField(
                     value = currentLocation,
                     onValueChange = onLocationChange,
-                    label = { Text("Current Location") },
+                    label = { Text("Enter a Location") },
                     modifier = Modifier.fillMaxWidth()
                 )
             }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Background -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M0,0h100v100h-100z" />
+
+    <!-- Outer black squares -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M10,10h20v20h-20z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M70,10h20v20h-20z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M10,70h20v20h-20z" />
+
+    <!-- Inner white squares -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14,14h12v12h-12z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M74,14h12v12h-12z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14,74h12v12h-12z" />
+
+    <!-- Random small black squares to simulate QR code -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M40,40h10v10h-10z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M50,60h5v5h-5z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M60,40h5v5h-5z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M30,60h5v5h-5z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M60,50h10v10h-10z" />
+</vector>

@@ -43,14 +43,14 @@ fun EventListScreen(
     date: String? = null
 ) {
     var isFilterPopupVisible by remember { mutableStateOf(false) }
-    var isSortPopupVisible by remember { mutableStateOf(false) } // State for sort popup
+    var isSortPopupVisible by remember { mutableStateOf(false) }
+
+    val events by viewModel.events.collectAsState() // Observing event list
+    val sortKey by viewModel.sortKey.collectAsState() // Observing current sort key
 
     LaunchedEffect(location, date) {
-        viewModel.fetchEvents(date = date, venueCity = location)
-        viewModel.fetchCategories()
+        viewModel.fetchFilteredEvents(location, date) // Fetch filtered events
     }
-
-    val events by viewModel.events.collectAsState()
 
     Scaffold(
         topBar = {
@@ -66,11 +66,9 @@ fun EventListScreen(
                     }
                 },
                 actions = {
-                    // Filter Button
                     IconButton(onClick = { isFilterPopupVisible = true }) {
                         Icon(Icons.Default.FilterList, contentDescription = "Filter Events")
                     }
-                    // Sort Button
                     IconButton(onClick = { isSortPopupVisible = true }) {
                         Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = "Sort Events")
                     }
@@ -92,16 +90,17 @@ fun EventListScreen(
             if (isFilterPopupVisible) {
                 FilterPopup(
                     onDismissRequest = { isFilterPopupVisible = false },
-                    viewModel = onboardingViewModel // Pass the OnboardingViewModel
+                    viewModel = onboardingViewModel
                 )
             }
 
             if (isSortPopupVisible) {
                 SortPopup(
                     onDismissRequest = { isSortPopupVisible = false },
-                    viewModel = viewModel // Pass the ViewModel here
+                    viewModel = viewModel
                 )
             }
         }
     }
 }
+

@@ -10,12 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 
 @Composable
 fun SortPopup(
     onDismissRequest: () -> Unit,
-    viewModel: EventViewModel // Pass the ViewModel
+    viewModel: EventViewModel
 ) {
     val sortOptions = mapOf(
         "Upcoming first" to "upcoming",
@@ -24,6 +25,7 @@ fun SortPopup(
     )
 
     var selectedOption by remember { mutableStateOf("") }
+    var selectedSortKey by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -36,18 +38,32 @@ fun SortPopup(
                         isSelected = selectedOption == option,
                         onClick = {
                             selectedOption = option
-                            val sortKey = sortOptions[option] ?: ""
-                            viewModel.fetchEventsSortedBy(sortKey) // Fetch sorted events
+                            selectedSortKey = sortOptions[option] ?: ""
                         }
                     )
                 }
             }
         },
         confirmButton = {
-            Button(onClick = onDismissRequest) { Text("Close") }
+            Button(
+                onClick = {
+                    if (selectedSortKey.isNotEmpty()) {
+                        println("Applying sort: $selectedSortKey")
+                        viewModel.updateSortKey(selectedSortKey)
+                        viewModel.fetchEventsSortedBy(selectedSortKey)
+                    }
+                    onDismissRequest() // Dismiss the dialog
+                }
+            ) {
+                Text("Apply Sort")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismissRequest) { Text("Cancel") }
         }
     )
 }
+
 
 @Composable
 fun SortOptionRow(label: String, isSelected: Boolean, onClick: () -> Unit) {

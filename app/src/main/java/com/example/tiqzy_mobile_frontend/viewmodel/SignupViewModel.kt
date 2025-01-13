@@ -5,23 +5,26 @@ import androidx.lifecycle.viewModelScope
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import kotlinx.coroutines.launch
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.launch
 
 class SignupViewModel(private val dataStore: DataStore<Preferences>) : ViewModel() {
 
-    fun storeUserData(fullName: String, email: String, phoneNumber: String, password: String) {
-        val userNameKey = stringPreferencesKey("user_name")
-        val emailKey = stringPreferencesKey("user_email")
-        val phoneKey = stringPreferencesKey("user_phone")
-        val passwordKey = stringPreferencesKey("user_password")
+    private val isLoggedKey = booleanPreferencesKey("is_logged")
+    private val userNameKey = stringPreferencesKey("user_name")
+    private val userEmailKey = stringPreferencesKey("user_email")
+    private val userPhoneKey = stringPreferencesKey("user_phone")
+    private val userPasswordKey = stringPreferencesKey("user_password")
 
+    fun storeUserData(fullName: String, email: String, phoneNumber: String, password: String) {
         viewModelScope.launch {
             dataStore.edit { preferences ->
                 preferences[userNameKey] = fullName
-                preferences[emailKey] = email
-                preferences[phoneKey] = phoneNumber
-                preferences[passwordKey] = password
+                preferences[userEmailKey] = email
+                preferences[userPhoneKey] = phoneNumber
+                preferences[userPasswordKey] = password
+                preferences[isLoggedKey] = true
             }
         }
     }

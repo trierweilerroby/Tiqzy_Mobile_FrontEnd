@@ -18,7 +18,7 @@ import javax.inject.Inject
 class EventViewModel @Inject constructor(
     private val repository: EventRepository,
     private val categoryRepository: CategoryRepository,
-    private val eventRepository: EventRepository
+    private val eventApiService: EventApiService
 ) : ViewModel() {
     private val _events = MutableStateFlow<List<Event>>(emptyList())
     val events: StateFlow<List<Event>> = _events
@@ -27,8 +27,11 @@ class EventViewModel @Inject constructor(
     private val _selectedEvent = MutableStateFlow<Event?>(null)
     val selectedEvent: StateFlow<Event?> = _selectedEvent
 
-    private val _sortedEvents = MutableStateFlow<List<Event>>(emptyList())
-    val sortedEvents: StateFlow<List<Event>> = _sortedEvents
+    private val _sortKey = MutableStateFlow("")
+    val sortKey: StateFlow<String> get() = _sortKey
+
+    private val _isSortPopupVisible = MutableStateFlow(false)
+    val isSortPopupVisible: Boolean get() = _isSortPopupVisible.value
 
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories
@@ -77,14 +80,43 @@ class EventViewModel @Inject constructor(
     fun fetchEventsSortedBy(sortKey: String) {
         viewModelScope.launch {
             try {
-                val events = repository.fetchSortedEvents(sortKey)
-                _sortedEvents.value = events
-                println("Sorted events fetched: $events")
+                val sortedEvents = repository.fetchSortedEvents(sortBy = sortKey)
+                _events.value = sortedEvents
+                println("Events sorted by $sortKey: ${sortedEvents.size} events found")
             } catch (e: Exception) {
-                e.printStackTrace()
+                println("Error fetching sorted events: ${e.message}")
             }
         }
     }
+
+    fun updateSortKey(newSortKey: String) {
+        _sortKey.value = newSortKey // Update the sort key
+    }
+
+    fun openSortPopup() {
+        _isSortPopupVisible.value = true
+    }
+
+    fun closeSortPopup() {
+        _isSortPopupVisible.value = false
+    }
+
+
+       // Function to fetch filtered events
+       fun fetchFilteredEvents(location: String? = null, date: String? = null) {
+           viewModelScope.launch {
+               try {
+                   val response = eventApiService.getEvents(
+                       venueCity = location.takeIf { !it.isNullOrEmpty() },
+                       date = date.takeIf { !it.isNullOrEmpty() }
+                   )
+                   _events.value = response
+               } catch (e: Exception) {
+                   println("Error fetching filtered events: ${e.message}")
+                   _events.value = emptyList()
+               }
+           }
+       }
 
     fun fetchCategories() {
         viewModelScope.launch {
