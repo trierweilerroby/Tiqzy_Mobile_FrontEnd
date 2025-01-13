@@ -21,7 +21,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.tiqzy_mobile_frontend.data.model.City
 import com.example.tiqzy_mobile_frontend.ui.components.ExploreCategories
+import com.example.tiqzy_mobile_frontend.ui.components.ExploreCities
 import com.example.tiqzy_mobile_frontend.ui.components.SearchBar
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import com.example.tiqzy_mobile_frontend.viewmodel.OnboardingViewModel
@@ -43,6 +45,8 @@ fun HomeScreen(
     val userSelectedCategories = remember { mutableStateOf<List<String>>(emptyList()) }
 
     val categories by viewModel.categories.collectAsState()
+
+    val cities by eventViewModel.cities.collectAsState()
 
     val (currentLocation, setCurrentLocation) = remember { mutableStateOf("") }
     val (selectedDate, setSelectedDate) = remember { mutableStateOf("") }
@@ -78,6 +82,8 @@ fun HomeScreen(
         } else {
             categories
         }
+
+        println("Fetched cities: ${cities.map { it.name }}")
     }
 
     Scaffold(
@@ -113,7 +119,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Home content
-                HomeContent(sortedCategories = sortedCategories)
+                HomeContent(sortedCategories = sortedCategories, navController, cities)
             }
         }
     }
@@ -152,7 +158,7 @@ fun HomeSearch(
 }
 
 @Composable
-fun HomeContent(sortedCategories: List<com.example.tiqzy_mobile_frontend.ui.components.Category>) {
+fun HomeContent(sortedCategories: List<com.example.tiqzy_mobile_frontend.ui.components.Category>, navController: NavHostController, cities : List<City>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -162,6 +168,8 @@ fun HomeContent(sortedCategories: List<com.example.tiqzy_mobile_frontend.ui.comp
     ) {
         // Explore Categories Component
         ExploreCategories(categories = sortedCategories)
+
+        ExploreCities(navController = navController, cities = cities)
     }
 }
 

@@ -5,6 +5,7 @@ import com.example.tiqzy_mobile_frontend.data.network.CategoryApiService
 import com.example.tiqzy_mobile_frontend.data.network.EventApiService
 import com.example.tiqzy_mobile_frontend.data.repository.AuthRepository
 import com.example.tiqzy_mobile_frontend.data.repository.CategoryRepository
+import com.example.tiqzy_mobile_frontend.data.repository.CitiesRepository
 import com.example.tiqzy_mobile_frontend.data.repository.EventRepository
 import dagger.Module
 import dagger.Provides
@@ -32,5 +33,11 @@ object RepositoryModule {
     @Singleton
     fun provideAuthRepository(authApiService: AuthApiService): AuthRepository {
         return AuthRepository(authApiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCitiesRepository(): CitiesRepository {
+        return CitiesRepository()
     }
 }

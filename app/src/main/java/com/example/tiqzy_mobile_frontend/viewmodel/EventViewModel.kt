@@ -3,10 +3,12 @@ package com.example.tiqzy_mobile_frontend.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tiqzy_mobile_frontend.data.model.City
 import com.example.tiqzy_mobile_frontend.ui.components.Category
 import com.example.tiqzy_mobile_frontend.data.model.Event
 import com.example.tiqzy_mobile_frontend.data.network.EventApiService
 import com.example.tiqzy_mobile_frontend.data.repository.CategoryRepository
+import com.example.tiqzy_mobile_frontend.data.repository.CitiesRepository
 import com.example.tiqzy_mobile_frontend.data.repository.EventRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +20,8 @@ import javax.inject.Inject
 class EventViewModel @Inject constructor(
     private val repository: EventRepository,
     private val categoryRepository: CategoryRepository,
-    private val eventApiService: EventApiService
+    private val eventApiService: EventApiService,
+    private val citiesRepository: CitiesRepository
 ) : ViewModel() {
     private val _events = MutableStateFlow<List<Event>>(emptyList())
     val events: StateFlow<List<Event>> = _events
@@ -36,8 +39,12 @@ class EventViewModel @Inject constructor(
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories
 
+    private val _cities = MutableStateFlow<List<City>>(emptyList())
+    val cities: StateFlow<List<City>> = _cities
+
     init {
         fetchEvents()
+        fetchCities()
     }
 
     fun fetchEvents(date: String? = null, venueCity: String? = null) {
@@ -118,10 +125,10 @@ class EventViewModel @Inject constructor(
            }
        }
 
-    fun fetchCategories() {
+
+    fun fetchCities() {
         viewModelScope.launch {
-            // Fetch categories from CategoryRepository
-            _categories.value = categoryRepository.fetchCategories()
+            _cities.value = citiesRepository.fetchCities()
         }
     }
 
