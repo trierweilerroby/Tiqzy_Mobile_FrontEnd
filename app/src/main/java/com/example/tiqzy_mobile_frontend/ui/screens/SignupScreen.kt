@@ -23,6 +23,7 @@ import com.example.tiqzy_mobile_frontend.R
 import com.example.tiqzy_mobile_frontend.ui.components.AppleAndGoogle
 import com.example.tiqzy_mobile_frontend.viewmodel.SignupViewModel
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import com.example.tiqzy_mobile_frontend.di.SignupViewModelFactory
 import kotlinx.coroutines.launch
@@ -106,6 +107,10 @@ fun SignupScreen(
                             println("Attempting to store user data")
                             signupViewModel.storeUserData(fullName, email, phoneNumber, password)
                             println("User data stored successfully")
+                            // Set isLoggedIn in DataStore
+                            dataStore.edit { preferences ->
+                                preferences[booleanPreferencesKey("is_logged_in")] = true
+                            }
                             navController.navigate("home")
                         } catch (e: Exception) {
                             println("Error in Sign Up process: ${e.message}")

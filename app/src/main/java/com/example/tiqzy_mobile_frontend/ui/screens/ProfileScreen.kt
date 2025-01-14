@@ -4,25 +4,25 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.tiqzy_mobile_frontend.R
 import com.example.tiqzy_mobile_frontend.ui.components.LoginCard
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController, dataStore: DataStore<Preferences>) {
+    val scope = rememberCoroutineScope()
+
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -34,21 +34,43 @@ fun ProfileScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    ProfileHeader()
 
-                ProfileHeader()
+                    LoginCard(
+                        onLoginClick = { navController.navigate("login") },
+                        onSignupClick = { navController.navigate("signup") }
+                    )
 
-                LoginCard(
-                    onLoginClick = { navController.navigate("login") },
-                    onSignupClick = { navController.navigate("signup") }
-                )
+                    ProfileMenuSection(navController)
+                }
 
-                ProfileMenuSection(navController)
+                // Logout Button
+                Button(
+                    onClick = {
+                        scope.launch {
+                            // Clear all data in DataStore
+                            dataStore.edit { it.clear() }
+                            // Navigate back to onboarding or login screen
+                            navController.navigate("onboarding") {
+                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(text = "Logout", color = MaterialTheme.colorScheme.onPrimary)
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun ProfileHeader() {

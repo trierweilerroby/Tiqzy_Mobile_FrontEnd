@@ -47,7 +47,7 @@ fun AppNavHost(
             FavoritesScreen(navController = navController, favoritesViewModel = favoritesViewModel, allEvents = allEvents)
         }
         composable("profile") {
-            ProfileScreen(navController = navController)
+            ProfileScreen(navController = navController, dataStore = LocalContext.current.dataStore)
         }
         composable("tickets") {
             TicketsScreen(
