@@ -1,7 +1,6 @@
 package com.example.tiqzy_mobile_frontend.data.repository
 
 import com.example.tiqzy_mobile_frontend.data.model.Category
-import com.example.tiqzy_mobile_frontend.data.model.CategoryUrls
 import com.example.tiqzy_mobile_frontend.data.model.Event
 import com.example.tiqzy_mobile_frontend.data.model.Venue
 import com.example.tiqzy_mobile_frontend.data.network.EventApiService
@@ -75,20 +74,9 @@ class EventRepository @Inject constructor(
         )
 
         val defaultCategory = Category(
-            name = "Default Category",
-            slug = "default-category",
-            termGroup = 0,
-            termTaxonomyId = 1,
-            taxonomy = "default_taxonomy",
-            description = "A default category for demonstration purposes.",
-            parent = 0,
-            count = 0,
-            filter = "raw",
-            id = 1,
-            urls = CategoryUrls(
-                self = "https://example.com/categories/default-category",
-                collection = "https://example.com/categories"
-            )
+            categoryId = 1,
+            name = "Default",
+            image = "https://www.uni-jena.de/unijenamedia/350955/header-2024.jpeg?height=428&width=760"
         )
 
         // Returning a default event based on the event ID

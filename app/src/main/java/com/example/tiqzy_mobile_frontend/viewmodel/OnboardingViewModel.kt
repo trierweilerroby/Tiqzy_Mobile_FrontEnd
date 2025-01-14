@@ -2,8 +2,8 @@ package com.example.tiqzy_mobile_frontend.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tiqzy_mobile_frontend.data.model.Category
 import com.example.tiqzy_mobile_frontend.data.repository.CategoryRepository
-import com.example.tiqzy_mobile_frontend.ui.components.Category
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

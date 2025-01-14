@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +42,8 @@ fun EventItem(
 ) {
     var showPopup by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-    val isFavorite = favoritesViewModel.favorites.contains(event)
+    val isFavorite = favoritesViewModel.favorites.collectAsState(initial = emptySet()).value.contains(event.id.toString())
+
 
     Card(
         modifier = modifier
@@ -116,7 +118,7 @@ fun EventItem(
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
                     .clickable {
-                        val message = if (favoritesViewModel.favorites.contains(event)) {
+                        val message = if (isFavorite) {
                             "Removed from Favorites"
                         } else {
                             "Added to Favorites"

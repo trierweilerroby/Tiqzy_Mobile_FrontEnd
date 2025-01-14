@@ -21,6 +21,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.tiqzy_mobile_frontend.data.model.Category
 import com.example.tiqzy_mobile_frontend.data.model.City
 import com.example.tiqzy_mobile_frontend.ui.components.ExploreCategories
 import com.example.tiqzy_mobile_frontend.ui.components.ExploreCities
@@ -158,7 +159,7 @@ fun HomeSearch(
 }
 
 @Composable
-fun HomeContent(sortedCategories: List<com.example.tiqzy_mobile_frontend.ui.components.Category>, navController: NavHostController, cities : List<City>) {
+fun HomeContent(sortedCategories: List<Category>, navController: NavHostController, cities : List<City>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -167,7 +168,7 @@ fun HomeContent(sortedCategories: List<com.example.tiqzy_mobile_frontend.ui.comp
         horizontalAlignment = Alignment.Start
     ) {
         // Explore Categories Component
-        ExploreCategories(categories = sortedCategories)
+        ExploreCategories(navController = navController, categories = sortedCategories)
 
         ExploreCities(navController = navController, cities = cities)
     }

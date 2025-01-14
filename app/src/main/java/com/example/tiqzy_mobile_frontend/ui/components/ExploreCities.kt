@@ -53,7 +53,6 @@ fun ExploreCities(navController: NavHostController, cities: List<City>) {
             ) {
                 items(cities) { city ->
                     CityCard(city) {
-                        println("City selected: ${city.name}") // Debug log for click
                         navController.navigate("eventList?location=${city.name}")
                     }
                 }
@@ -64,12 +63,11 @@ fun ExploreCities(navController: NavHostController, cities: List<City>) {
 
 @Composable
 fun CityCard(city: City, onClick: () -> Unit) {
-    println("CityCard rendered for: ${city.name}") // Debug log
     Card(
         modifier = Modifier
             .width(150.dp)
             .height(100.dp)
-            .clickable { onClick() }, // Handle clicks
+            .clickable { onClick() },
         shape = RoundedCornerShape(8.dp)
     ) {
         Box(

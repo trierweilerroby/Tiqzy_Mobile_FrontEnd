@@ -1,6 +1,8 @@
 package com.example.tiqzy_mobile_frontend.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
@@ -12,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.tiqzy_mobile_frontend.data.database.dataStore
 import com.example.tiqzy_mobile_frontend.ui.screens.*
+import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 
 @Composable
@@ -19,6 +22,7 @@ fun AppNavHost(
     navController: NavHostController,
     dataStore: DataStore<Preferences>,
     favoritesViewModel: FavoritesViewModel,
+    eventViewModel: EventViewModel,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -39,7 +43,8 @@ fun AppNavHost(
             HomeScreen(navController = navController, dataStore = dataStore)
         }
         composable("favorites") {
-            FavoritesScreen(navController = navController, favoritesViewModel = favoritesViewModel)
+            val allEvents by eventViewModel.events.collectAsState(initial = emptyList())
+            FavoritesScreen(navController = navController, favoritesViewModel = favoritesViewModel, allEvents = allEvents)
         }
         composable("profile") {
             ProfileScreen(navController = navController)
@@ -73,6 +78,19 @@ fun AppNavHost(
                 location = location,
                 date = date,
                 favoritesViewModel = favoritesViewModel
+            )
+        }
+
+        composable(
+            route = "eventList?categories={categories}",
+            arguments = listOf(
+                navArgument("categories") { type = NavType.StringType; nullable = true }
+            )
+        ) { backStackEntry ->
+            val categories = backStackEntry.arguments?.getString("categories") ?: ""
+            EventListScreen(
+                navController = navController,
+                initialSelectedCategory = categories
             )
         }
 

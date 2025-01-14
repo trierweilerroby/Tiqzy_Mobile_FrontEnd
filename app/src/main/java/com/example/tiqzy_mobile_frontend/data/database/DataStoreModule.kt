@@ -1,13 +1,11 @@
 package com.example.tiqzy_mobile_frontend.data.database
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
@@ -16,7 +14,10 @@ object DataStoreModule {
 
     @Provides
     @Singleton
-    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
-        return context.dataStore
+    fun provideDataStoreSingleton(
+        @ApplicationContext context: Context
+    ): DataStoreSingleton {
+        return DataStoreSingleton(context)
     }
 }
+

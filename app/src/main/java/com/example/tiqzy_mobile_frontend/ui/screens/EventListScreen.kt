@@ -40,16 +40,38 @@ fun EventListScreen(
     favoritesViewModel: FavoritesViewModel = hiltViewModel(),
     onboardingViewModel: OnboardingViewModel = hiltViewModel(),
     location: String? = null,
-    date: String? = null
+    date: String? = null,
+    initialSelectedCategory: String? = null
 ) {
     var isFilterPopupVisible by remember { mutableStateOf(false) }
     var isSortPopupVisible by remember { mutableStateOf(false) }
+    var selectedCategories by remember {
+        mutableStateOf(
+            initialSelectedCategory?.let { listOf(it) } ?: emptyList()
+        )
+    }
 
-    val events by viewModel.events.collectAsState() // Observing event list
-    val sortKey by viewModel.sortKey.collectAsState() // Observing current sort key
+    val events by viewModel.events.collectAsState()
+    val sortKey by viewModel.sortKey.collectAsState()
 
-    LaunchedEffect(location, date) {
-        viewModel.fetchFilteredEvents(location, date) // Fetch filtered events
+    // Apply filtering and sorting when parameters change
+    LaunchedEffect(selectedCategories, sortKey, location, date) {
+        when {
+            selectedCategories.isNotEmpty() -> {
+                // Fetch events filtered by categories
+                val categoryQuery = selectedCategories.joinToString(",")
+                viewModel.fetchEventsFilteredByCategories(categoryQuery)
+            }
+            location != null || date != null -> {
+                // Fetch events filtered by location and date
+                viewModel.fetchFilteredEvents(location, date)
+            }
+        }
+
+        // If sortKey is updated, sort events
+        if (sortKey.isNotEmpty()) {
+            viewModel.fetchEventsSortedBy(sortKey)
+        }
     }
 
     Scaffold(
@@ -90,7 +112,10 @@ fun EventListScreen(
             if (isFilterPopupVisible) {
                 FilterPopup(
                     onDismissRequest = { isFilterPopupVisible = false },
-                    viewModel = onboardingViewModel
+                    onApplyFilters = { categories ->
+                        selectedCategories = categories
+                    },
+                    preSelectedCategories = selectedCategories // Pass the current selected categories
                 )
             }
 
@@ -103,4 +128,3 @@ fun EventListScreen(
         }
     }
 }
-

@@ -67,6 +67,7 @@ fun MainScreen(
             navController = navController,
             dataStore = dataStore,
             favoritesViewModel = favoritesViewModel,
+            eventViewModel = eventViewModel,
             modifier = Modifier.padding(innerPadding)
         )
     }

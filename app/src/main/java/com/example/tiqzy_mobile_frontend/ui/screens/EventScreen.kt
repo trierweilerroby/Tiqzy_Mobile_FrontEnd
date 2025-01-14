@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -28,6 +29,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.tiqzy_mobile_frontend.R
 import com.example.tiqzy_mobile_frontend.data.model.Event
 import com.example.tiqzy_mobile_frontend.ui.components.ShareButton
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
@@ -54,10 +59,8 @@ fun EventScreen(
     viewModel: EventViewModel = hiltViewModel(),
     favoritesViewModel: FavoritesViewModel = hiltViewModel()
 ) {
-    // Observe the selected event
     val event by viewModel.selectedEvent.collectAsState()
 
-    // Fetch the event when the screen is loaded
     LaunchedEffect(eventId) {
         viewModel.fetchEventById(eventId)
     }
@@ -85,7 +88,11 @@ fun EventScreen(
             contentAlignment = Alignment.Center
         ) {
             if (event != null) {
-                EventDetailsContent(navController = navController, event = event!!, favoritesViewModel = favoritesViewModel)
+                EventDetailsContent(
+                    navController = navController,
+                    event = event!!,
+                    favoritesViewModel = favoritesViewModel
+                )
             } else {
                 Text(
                     text = "Loading...",
@@ -100,14 +107,15 @@ fun EventScreen(
     }
 }
 
-
 @Composable
 fun EventDetailsContent(
     navController: NavController,
     event: Event,
     favoritesViewModel: FavoritesViewModel = hiltViewModel()
 ) {
-    val isFavorite by remember { derivedStateOf { favoritesViewModel.isFavorite(event) } }
+    val context = LocalContext.current
+    val favoriteIds by favoritesViewModel.favorites.collectAsState(initial = emptySet())
+    val isFavorite = favoriteIds.contains(event.id.toString())
     var showPopup by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -118,88 +126,139 @@ fun EventDetailsContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        AsyncImage(
-            model = event.imageUrl,
-            contentDescription = "Event Image",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(bottom = 8.dp)
-        )
+        Box(modifier = Modifier.fillMaxWidth()) {
+            AsyncImage(
+                model = event.imageUrl,
+                contentDescription = "Event Image",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = if (isFavorite) "Unfavorite event" else "Favorite event",
-                tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .clickable {
-                        val message = if (favoritesViewModel.favorites.contains(event)) {
-                            "Removed from Favorites"
-                        } else {
-                            "Added to Favorites"
-                        }
-                        favoritesViewModel.toggleFavorite(event)
-                        showPopup = true
-                        coroutineScope.launch {
-                            delay(1500)
-                            showPopup = false
-                        }
+            // Favorite Icon
+            IconButton(
+                onClick = {
+                    favoritesViewModel.toggleFavorite(event)
+                    showPopup = true
+                    coroutineScope.launch {
+                        delay(1500)
+                        showPopup = false
                     }
-            )
-
-            IconButton(onClick = { /* Handle location */ }) {
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
                 Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Location",
-                    tint = MaterialTheme.colorScheme.primary
+                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                    contentDescription = "Favorite",
+                    tint = if (isFavorite) Color.Red else Color.Gray,
+                    modifier = Modifier.size(32.dp)
                 )
             }
 
-            ShareButton(eventLink = "https://www.example.com/event/${event.id}")
+            // Open in Maps Icon
+            IconButton(
+                onClick = {
+                    val latitude = event.venue?.geoLat
+                    val longitude = event.venue?.geoLng
+                    if (latitude != null && longitude != null) {
+                        val uri = "geo:$latitude,$longitude?q=${event.venue.city}, ${event.venue.address}"
+                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(uri))
+                        intent.setPackage("com.google.android.apps.maps")
+                        context.startActivity(intent)
+                    }
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "Open in Maps",
+                    tint = Color.Black,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+
+            // Share Icon
+            IconButton(
+                onClick = {
+                    val shareIntent = android.content.Intent().apply {
+                        action = android.content.Intent.ACTION_SEND
+                        putExtra(android.content.Intent.EXTRA_TEXT, "Check out this event: ${event.title}")
+                        type = "text/plain"
+                    }
+                    context.startActivity(android.content.Intent.createChooser(shareIntent, "Share via"))
+                },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.share_icon),
+                    contentDescription = "Share",
+                    tint = Color.Black,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = event.title,
             style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        event.venue?.city?.let { city ->
-            Text(
-                text = city,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 4.dp)
-            )
+        event.venue?.let { venue ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "${venue.city}, ${venue.address}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         Text(
-            text = "From €${event.price}",
+            text = "from €${event.price}",
             style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(top = 4.dp)
+            color = MaterialTheme.colorScheme.primary
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = { navController.navigate("booking/${event.id}") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Check availability")
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = event.description,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(8.dp)
         )
+
+        if (event.categories.isNotEmpty()) {
+            Text(
+                text = "Categories: ${event.categories.joinToString { it.name }}",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
 
         if (showPopup) {
             Surface(

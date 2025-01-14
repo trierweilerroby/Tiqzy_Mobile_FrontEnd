@@ -2,6 +2,7 @@ package com.example.tiqzy_mobile_frontend.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -21,22 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.navigation.NavHostController
+import com.example.tiqzy_mobile_frontend.data.model.Category
 
-
-data class Category(
-    val categoryId: Int,
-    val name: String,
-    val image: String,
-    val event: List<Event>
-)
-
-data class Event(
-    val eventId: Int,
-    val eventName: String
-)
 
 @Composable
-fun ExploreCategories(categories: List<Category>) {
+fun ExploreCategories(navController: NavHostController, categories: List<Category>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,18 +45,22 @@ fun ExploreCategories(categories: List<Category>) {
             contentPadding = PaddingValues(horizontal = 8.dp)
         ) {
             items(categories) { category ->
-                CategoryCard(category)
+                CategoryCard(category) {
+                    println("${category.name}: events")
+                    navController.navigate("eventList?categories=${category.name}")
+                }
             }
         }
     }
 }
 
 @Composable
-fun CategoryCard(category: Category) {
+fun CategoryCard(category: Category, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .width(150.dp)
-            .height(100.dp),
+            .height(100.dp)
+            .clickable { onClick() }, // Navigate when clicked
         shape = RoundedCornerShape(8.dp)
     ) {
         Box(
@@ -97,38 +92,3 @@ fun CategoryCard(category: Category) {
     }
 }
 
-// Sample usage with the updated Category model
-@Preview(showBackground = true)
-@Composable
-fun ExploreCategoriesPreview() {
-    val categories = listOf(
-        Category(
-            categoryId = 1,
-            name = "Music",
-            image = "https://example.com/music.jpg",
-            event = listOf(
-                Event(eventId = 1, eventName = "Concert"),
-                Event(eventId = 2, eventName = "Festival")
-            )
-        ),
-        Category(
-            categoryId = 2,
-            name = "Sports",
-            image = "https://example.com/sports.jpg",
-            event = listOf(
-                Event(eventId = 3, eventName = "Soccer Match"),
-                Event(eventId = 4, eventName = "Marathon")
-            )
-        ),
-        Category(
-            categoryId = 3,
-            name = "Food",
-            image = "https://example.com/food.jpg",
-            event = listOf(
-                Event(eventId = 5, eventName = "Food Expo"),
-                Event(eventId = 6, eventName = "Cooking Class")
-            )
-        )
-    )
-    ExploreCategories(categories)
-}

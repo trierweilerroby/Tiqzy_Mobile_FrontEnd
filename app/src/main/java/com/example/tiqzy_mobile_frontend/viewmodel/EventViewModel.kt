@@ -3,8 +3,8 @@ package com.example.tiqzy_mobile_frontend.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tiqzy_mobile_frontend.data.model.Category
 import com.example.tiqzy_mobile_frontend.data.model.City
-import com.example.tiqzy_mobile_frontend.ui.components.Category
 import com.example.tiqzy_mobile_frontend.data.model.Event
 import com.example.tiqzy_mobile_frontend.data.network.EventApiService
 import com.example.tiqzy_mobile_frontend.data.repository.CategoryRepository
@@ -72,14 +72,13 @@ class EventViewModel @Inject constructor(
         }
     }
 
-    fun fetchEventsByCategory(categories: List<String>) {
+    fun fetchEventsFilteredByCategories(categories: String) {
         viewModelScope.launch {
             try {
-                val events = repository.fetchEventsByCategory(categories)
-                _events.value = events
-                println("Fetched events by category: $events")
+                val response = eventApiService.getEvents(categories = categories)
+                _events.value = response
             } catch (e: Exception) {
-                e.printStackTrace()
+                println("Error fetching filtered events: ${e.message}")
             }
         }
     }
