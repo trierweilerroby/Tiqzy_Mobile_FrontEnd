@@ -64,19 +64,19 @@ fun SignupScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top, // Align items to the top
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(16.dp)) // Add spacing from the top
+
             Text(
                 text = "Create an Account",
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 4.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
             )
 
             InputField(value = fullName, onValueChange = { fullName = it }, label = "Full Name", placeholder = "e.g Christian Bale")
             InputField(value = email, onValueChange = { email = it }, label = "Email", placeholder = "e.g christian.bale@gmail.com", keyboardType = KeyboardType.Email)
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = password,
@@ -124,6 +124,7 @@ fun SignupScreen(
         }
     }
 }
+
 
 
 @Composable
