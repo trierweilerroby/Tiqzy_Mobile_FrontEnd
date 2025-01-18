@@ -1,7 +1,6 @@
 package com.example.tiqzy_mobile_frontend
 
-import BottomNavBar
-import android.content.Context
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +18,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.example.tiqzy_mobile_frontend.data.database.dataStore
+import com.example.tiqzy_mobile_frontend.ui.components.BottomNavBar
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

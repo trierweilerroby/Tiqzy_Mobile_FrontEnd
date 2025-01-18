@@ -20,6 +20,7 @@ hilt = "2.51.1"
 hiltCompose = "1.2.0"
 kotlinSerialization = "2.0.20"
 kotlinSerializationJson = "1.7.3"
+storage = "1.5.0"
 
 [libraries]
 # Core dependencies
@@ -64,6 +65,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

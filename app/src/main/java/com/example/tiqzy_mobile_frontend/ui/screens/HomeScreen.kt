@@ -1,6 +1,10 @@
 package com.example.tiqzy_mobile_frontend.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Doorbell
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -13,6 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
@@ -89,49 +95,74 @@ fun HomeScreen(
         } else {
             categories
         }
-
-        println("Fetched cities: ${cities.map { it.name }}")
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { padding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
-            contentAlignment = Alignment.Center
+                .padding(padding)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top,
-                modifier = Modifier.fillMaxSize()
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Welcome Header
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             ) {
-                // Welcome message
-                Text(
-                    text = if (isLoggedIn) "Welcome back, $logedUser!" else "Welcome $logedUser! not logged",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(top = 15.dp)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Holland Welcome",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = if (isLoggedIn) "Welcome back, $logedUser!" else "Welcome, Guest!",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Gray
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "Notifications",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
 
-                // Home search
-                HomeSearch(
-                    navController = navController,
-                    currentLocation = currentLocation,
-                    selectedDate = selectedDate,
-                    onLocationChange = setCurrentLocation,
-                    onDateChange = setSelectedDate
-                )
+            // Home Search Section
+            HomeSearch(
+                navController = navController,
+                currentLocation = currentLocation,
+                selectedDate = selectedDate,
+                onLocationChange = setCurrentLocation,
+                onDateChange = setSelectedDate
+            )
 
-                Spacer(modifier = Modifier.height(16.dp))
+            // Explore Cities and Categories
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
 
-                // Home content
-                HomeContent(sortedCategories = sortedCategories, navController, cities)
+                ExploreCategories(navController = navController, categories = sortedCategories)
+
+                ExploreCities(navController = navController, cities = cities)
+
             }
         }
     }
 }
-
 
 @Composable
 fun HomeSearch(
@@ -144,40 +175,21 @@ fun HomeSearch(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
+            .padding(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         SearchBar(
             currentLocation = currentLocation,
             selectedDate = selectedDate,
             onLocationChange = onLocationChange,
             onDateChange = onDateChange,
             onSearchClick = { location, date ->
-                val encodedLocation = location?.let { URLEncoder.encode(it, "UTF-8") } ?: ""
-                val encodedDate = date?.let { URLEncoder.encode(it, "UTF-8") } ?: ""
+                val encodedLocation = location?.let { URLEncoder.encode(it, StandardCharsets.UTF_8.name()) } ?: ""
+                val encodedDate = date?.let { URLEncoder.encode(it, StandardCharsets.UTF_8.name()) } ?: ""
                 navController.navigate("eventList?date=$encodedDate&location=$encodedLocation")
             }
-
         )
     }
 }
-
-@Composable
-fun HomeContent(sortedCategories: List<Category>, navController: NavHostController, cities : List<City>) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
-        // Explore Categories Component
-        ExploreCategories(navController = navController, categories = sortedCategories)
-
-        ExploreCities(navController = navController, cities = cities)
-    }
-}
-
 

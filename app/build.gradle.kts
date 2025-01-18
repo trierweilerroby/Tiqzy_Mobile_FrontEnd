@@ -71,6 +71,7 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.storage)
     kapt(libs.hilt.compiler)
 
     // Retrofit
