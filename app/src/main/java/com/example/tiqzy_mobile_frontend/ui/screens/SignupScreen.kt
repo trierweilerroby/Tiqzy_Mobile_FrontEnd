@@ -1,83 +1,86 @@
 package com.example.tiqzy_mobile_frontend.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.tiqzy_mobile_frontend.R
-import com.example.tiqzy_mobile_frontend.ui.components.AppleAndGoogle
-import com.example.tiqzy_mobile_frontend.viewmodel.SignupViewModel
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import com.example.tiqzy_mobile_frontend.di.SignupViewModelFactory
+import com.example.tiqzy_mobile_frontend.ui.components.GoogleLogin
+import com.example.tiqzy_mobile_frontend.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
 
-
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(
     navController: NavController,
-    dataStore: DataStore<Preferences>
+    authViewModel: AuthViewModel = hiltViewModel() // Inject ViewModel
 ) {
-    val signupViewModel: SignupViewModel = viewModel(factory = SignupViewModelFactory(dataStore))
-    var fullName by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            )
-        }
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Top, // Align items to the top
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(16.dp)) // Add spacing from the top
-
+            // Title and Subtitle
             Text(
-                text = "Create an Account",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
+                text = "Register",
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Create an account to start exploring Holland",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Name Input
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                placeholder = { Text("e.g., John Doe") },
+                modifier = Modifier.fillMaxWidth()
             )
 
-            InputField(value = fullName, onValueChange = { fullName = it }, label = "Full Name", placeholder = "e.g Christian Bale")
-            InputField(value = email, onValueChange = { email = it }, label = "Email", placeholder = "e.g christian.bale@gmail.com", keyboardType = KeyboardType.Email)
+            Spacer(modifier = Modifier.height(16.dp))
 
+            // Email Input
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                placeholder = { Text("e.g., christian.bale@gmail.com") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Password Input
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -100,50 +103,73 @@ fun SignupScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Register Button
             Button(
                 onClick = {
+                    val trimmedEmail = email.trim()
+                    if (name.trim().isBlank()) {
+                        errorMessage = "Name cannot be empty."
+                        return@Button
+                    }
+
+                    if (trimmedEmail.isBlank()) {
+                        errorMessage = "Email cannot be empty."
+                        return@Button
+                    }
+
+                    if (!authViewModel.isValidEmail(trimmedEmail)) {
+                        errorMessage = "Invalid email format. Please try again."
+                        return@Button
+                    }
+
+                    if (password.length < 6) {
+                        errorMessage = "Password must be at least 6 characters long."
+                        return@Button
+                    }
+
                     scope.launch {
-                        try {
-                            println("Attempting to store user data")
-                            signupViewModel.storeUserData(fullName, email, phoneNumber, password)
-                            println("User data stored successfully")
-                            // Set isLoggedIn in DataStore
-                            dataStore.edit { preferences ->
-                                preferences[booleanPreferencesKey("is_logged_in")] = true
+                        authViewModel.register(email, password,
+                            onSuccess = {
+                                // Optionally update the user's display name here
+                                authViewModel.updateUserName(name) { success, updateError ->
+                                    if (success) {
+                                        navController.navigate("home")
+                                    } else {
+                                        errorMessage = updateError
+                                    }
+                                }
+                            },
+                            onError = { error ->
+                                errorMessage = error
                             }
-                            navController.navigate("home")
-                        } catch (e: Exception) {
-                            println("Error in Sign Up process: ${e.message}")
-                        }
+                        )
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
             ) {
-                Text("Sign Up")
+                Text("Register")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Google Login Section
+            GoogleLogin(
+                onGoogleLoginClick = {
+                    // Implement Google Login Action
+                }
+            )
+
+            // Error Message
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
 }
-
-
-
-@Composable
-fun InputField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    placeholder: String,
-    keyboardType: KeyboardType = KeyboardType.Text
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        placeholder = { Text(placeholder) },
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        modifier = Modifier.fillMaxWidth()
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-}
-

@@ -12,6 +12,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.tiqzy_mobile_frontend.data.database.DataStoreSingleton
 import com.example.tiqzy_mobile_frontend.data.database.dataStore
 import com.example.tiqzy_mobile_frontend.ui.screens.*
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
@@ -52,15 +53,15 @@ fun AppNavHost(
         composable("tickets") {
             TicketsScreen(
                 navController = navController,
-                dataStore = LocalContext.current.dataStore)
+                dataStore = LocalContext.current.dataStore
+            )
         }
         composable("login") {
             LoginScreen(navController = navController)
         }
         composable("signup") {
             SignupScreen(
-                navController = navController,
-                dataStore = LocalContext.current.dataStore
+                navController = navController
             )
         }
 

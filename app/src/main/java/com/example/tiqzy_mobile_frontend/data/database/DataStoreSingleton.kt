@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,6 +18,8 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "us
 object DataStoreKeys {
     val FAVORITES_KEY = stringSetPreferencesKey("favorites")
     val IS_LOGGED_IN_KEY = booleanPreferencesKey("is_logged_in")
+    val CURRENT_USER_EMAIL = stringPreferencesKey("current_user_email")
+    val CURRENT_USER_NAME = stringPreferencesKey("current_user_name")
 }
 
 class DataStoreSingleton @Inject constructor(private val context: Context) {
@@ -43,12 +46,20 @@ class DataStoreSingleton @Inject constructor(private val context: Context) {
 
 
     //login
+    suspend fun setUserName(name: String) {
+        dataStore.edit { preferences ->
+            preferences[DataStoreKeys.CURRENT_USER_NAME] = name
+            println("name saved to datastore")
+        }
+    }
 
-    // Get login state
+    val currentUserName: Flow<String?> = dataStore.data.map { preferences ->
+        preferences[DataStoreKeys.CURRENT_USER_NAME]
+    }
+
     val isLoggedIn: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[DataStoreKeys.IS_LOGGED_IN_KEY] ?: false
     }
-
     // Set login state
     suspend fun setLoggedIn(isLoggedIn: Boolean) {
         dataStore.edit { preferences ->

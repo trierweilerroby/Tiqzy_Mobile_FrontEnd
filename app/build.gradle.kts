@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt") // Annotation processing
     alias(libs.plugins.hilt) // Correct Hilt plugin alias
+    id("com.google.gms.google-services") // Google Services plugin
 }
 
 android {
@@ -83,6 +84,12 @@ dependencies {
     // Image Loading
     implementation("io.coil-kt:coil-compose:2.2.2")
 
+    // Firebase (Add Firebase libraries as needed)
+    implementation(platform("com.google.firebase:firebase-bom:32.1.1")) // Firebase BoM
+    implementation("com.google.firebase:firebase-auth") // Firebase Authentication
+    implementation("com.google.firebase:firebase-firestore") // Firebase Firestore (optional)
+    implementation("com.google.firebase:firebase-messaging") // Firebase Messaging (optional)
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -95,7 +102,10 @@ dependencies {
     // Serialization
     implementation(libs.kotlinx.serialization.json)
 
-    implementation (libs.datastore.preferences)
-    implementation ("androidx.datastore:datastore-preferences:1.0.0")
-    implementation ("androidx.datastore:datastore-core:1.0.0")
+    implementation(libs.datastore.preferences)
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-core:1.0.0")
 }
+
+// Apply the Google Services plugin
+apply(plugin = "com.google.gms.google-services")

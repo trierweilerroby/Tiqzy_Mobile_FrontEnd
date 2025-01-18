@@ -16,12 +16,21 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.navigation.NavController
 import com.example.tiqzy_mobile_frontend.R
+import com.example.tiqzy_mobile_frontend.data.database.DataStoreKeys
+import com.example.tiqzy_mobile_frontend.data.repository.FirebaseRepository
 import com.example.tiqzy_mobile_frontend.ui.components.LoginCard
+import com.example.tiqzy_mobile_frontend.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
+
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ProfileScreen(navController: NavController, dataStore: DataStore<Preferences>) {
     val scope = rememberCoroutineScope()
+
+    // Fetch the current user's name from FirebaseAuth
+    val userName = FirebaseAuth.getInstance().currentUser?.displayName
+
 
     Scaffold { innerPadding ->
         Box(
@@ -37,7 +46,8 @@ fun ProfileScreen(navController: NavController, dataStore: DataStore<Preferences
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    ProfileHeader()
+                    // Pass the user's name to the header
+                    ProfileHeader(userName = userName)
 
                     LoginCard(
                         onLoginClick = { navController.navigate("login") },
@@ -51,8 +61,16 @@ fun ProfileScreen(navController: NavController, dataStore: DataStore<Preferences
                 Button(
                     onClick = {
                         scope.launch {
+
+                            FirebaseAuth.getInstance().signOut()
                             // Clear all data in DataStore
                             dataStore.edit { it.clear() }
+
+                            // Set isLoggedIn to false
+                            dataStore.edit { preferences ->
+                                preferences[DataStoreKeys.IS_LOGGED_IN_KEY] = false
+                            }
+
                             // Navigate back to onboarding or login screen
                             navController.navigate("onboarding") {
                                 popUpTo(navController.graph.startDestinationId) { inclusive = true }
@@ -64,16 +82,17 @@ fun ProfileScreen(navController: NavController, dataStore: DataStore<Preferences
                         .padding(vertical = 16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text(text = "Logout", color = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = "Logout", color = MaterialTheme.colorScheme.onErrorContainer)
                 }
             }
         }
     }
 }
 
-
 @Composable
-fun ProfileHeader() {
+fun ProfileHeader(
+    userName: String? = null
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -90,7 +109,7 @@ fun ProfileHeader() {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Log in",
+                text = userName ?: "Welcome",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -173,7 +192,7 @@ fun ProfileMenuItem(
                 )
             }
             Icon(
-                painter = painterResource(id = R.drawable.arrow_right), // Replace with arrow icon
+                painter = painterResource(id = R.drawable.arrow_right),
                 contentDescription = "Arrow",
                 tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(20.dp)

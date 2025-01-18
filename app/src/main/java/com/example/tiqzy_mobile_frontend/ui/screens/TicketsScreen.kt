@@ -41,6 +41,8 @@ fun TicketsScreen(navController: NavHostController, dataStore: DataStore<android
     var userName by remember { mutableStateOf("User") }
     var isLoggedIn by remember { mutableStateOf(false) }
 
+    
+
     // Safely read from DataStore
     LaunchedEffect(Unit) {
         dataStore.data

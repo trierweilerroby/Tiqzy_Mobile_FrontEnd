@@ -1,15 +1,24 @@
 package com.example.tiqzy_mobile_frontend.di
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import com.example.tiqzy_mobile_frontend.data.database.dataStore
 import com.example.tiqzy_mobile_frontend.data.model.Event
-import com.example.tiqzy_mobile_frontend.data.network.AuthApiService
 import com.example.tiqzy_mobile_frontend.data.network.CategoryApiService
 import com.example.tiqzy_mobile_frontend.data.network.EventApiService
 import com.example.tiqzy_mobile_frontend.data.network.EventDeserializer
+import com.example.tiqzy_mobile_frontend.data.repository.FirebaseRepository
+import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -44,13 +53,28 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthApiService(retrofit: Retrofit): AuthApiService {
-        return retrofit.create(AuthApiService::class.java)
+    fun provideCategoryApiService(retrofit: Retrofit): CategoryApiService {
+        return retrofit.create(CategoryApiService::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideCategoryApiService(retrofit: Retrofit): CategoryApiService {
-        return retrofit.create(CategoryApiService::class.java)
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return context.dataStore
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseRepository(
+        auth: FirebaseAuth,
+        dataStore: DataStore<Preferences>
+    ): FirebaseRepository {
+        return FirebaseRepository(auth, dataStore)
     }
 }

@@ -1,12 +1,37 @@
-package com.example.tiqzy_mobile_frontend.data.network
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
 
-import retrofit2.http.Body
-import retrofit2.http.POST
+class AuthApiService(
+    private val firebaseAuth: FirebaseAuth
+) {
 
-data class LoginRequest(val email: String, val password: String)
-data class LoginResponse(val token: String, val userId: Int)
+    // Sign up with email and password
+    suspend fun signUp(email: String, password: String): Result<Unit> {
+        return try {
+            firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
-interface AuthApiService {
-    @POST("login")
-    suspend fun login(@Body request: LoginRequest): LoginResponse
+    // Sign in with email and password
+    suspend fun signIn(email: String, password: String): Result<Unit> {
+        return try {
+            firebaseAuth.signInWithEmailAndPassword(email, password).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Logout the current user
+    fun logout() {
+        firebaseAuth.signOut()
+    }
+
+    // Check if a user is logged in
+    fun isLoggedIn(): Boolean {
+        return firebaseAuth.currentUser != null
+    }
 }

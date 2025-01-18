@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "794245687798",
+    "project_id": "tiqzy-80c07",
+    "storage_bucket": "tiqzy-80c07.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794245687798:android:052d63ed0f18adc56effd7",
+        "android_client_info": {
+          "package_name": "com.example.tiqzy_mobile_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvb-IFYB1HtCywsh9ju9MN_eqxbqQOw9s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

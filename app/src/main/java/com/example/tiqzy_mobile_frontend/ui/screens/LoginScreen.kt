@@ -15,17 +15,25 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.tiqzy_mobile_frontend.R
-import com.example.tiqzy_mobile_frontend.ui.components.AppleAndGoogle
+import com.example.tiqzy_mobile_frontend.ui.components.GoogleLogin
+import com.example.tiqzy_mobile_frontend.viewmodel.AuthViewModel
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController) {
+    val authViewModel: AuthViewModel = hiltViewModel() // Inject ViewModel
+    val scope = rememberCoroutineScope()
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
         topBar = {
@@ -56,19 +64,34 @@ fun LoginScreen(navController: NavController) {
                 isPasswordVisible = isPasswordVisible,
                 onPasswordVisibilityChange = { isPasswordVisible = !isPasswordVisible },
                 onLoginClick = {
-                    // Handle login logic here
-                    navController.navigate("home")
-                },
-                onAppleLoginClick = {
-                    // Handle Apple login
+                    scope.launch {
+                        authViewModel.login(
+                            email = email,
+                            password = password,
+                            onSuccess = { navController.navigate("home") },
+                            onError = { message -> errorMessage = message }
+                        )
+                    }
                 },
                 onGoogleLoginClick = {
-                    // Handle Google login
+                    // Handle Google login here if needed
                 },
                 onSignUpClick = {
                     navController.navigate("signup")
                 }
             )
+
+            // Display Error Message
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(16.dp)
+                )
+            }
         }
     }
 }
@@ -82,7 +105,6 @@ fun LoginContent(
     isPasswordVisible: Boolean,
     onPasswordVisibilityChange: () -> Unit,
     onLoginClick: () -> Unit,
-    onAppleLoginClick: () -> Unit,
     onGoogleLoginClick: () -> Unit,
     onSignUpClick: () -> Unit
 ) {
@@ -90,7 +112,7 @@ fun LoginContent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Title and Subtitle
@@ -153,19 +175,20 @@ fun LoginContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Apple and Google Login
-        AppleAndGoogle(
-            onAppleLoginClick = onAppleLoginClick,
-            onGoogleLoginClick = onGoogleLoginClick,
-            onSignUpClick = onSignUpClick
+        //Google Login
+        GoogleLogin(
+            onGoogleLoginClick = onGoogleLoginClick
         )
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewLoginScreen() {
-    MaterialTheme {
-        LoginScreen(navController = rememberNavController())
+        // Signup Navigation
+        TextButton(
+            onClick = onSignUpClick
+        ) {
+            Text(
+                text = "Don’t have an account? Sign Up",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }

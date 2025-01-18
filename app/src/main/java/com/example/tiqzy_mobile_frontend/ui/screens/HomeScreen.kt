@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -28,7 +29,9 @@ import com.example.tiqzy_mobile_frontend.ui.components.ExploreCities
 import com.example.tiqzy_mobile_frontend.ui.components.SearchBar
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import com.example.tiqzy_mobile_frontend.viewmodel.OnboardingViewModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -42,6 +45,8 @@ fun HomeScreen(
     val nameKey = stringPreferencesKey("user_name")
     var userName by remember { mutableStateOf("User") }
 
+    val logedUser = FirebaseAuth.getInstance().currentUser?.displayName
+
     val categoriesKey = stringPreferencesKey("user_categories")
     val userSelectedCategories = remember { mutableStateOf<List<String>>(emptyList()) }
 
@@ -54,11 +59,12 @@ fun HomeScreen(
 
     var filteredCategories by remember { mutableStateOf(categories) }
 
-    // Check if user is logged in and load user data
-    var isLoggedIn by remember { mutableStateOf(false) }
+    val isLoggedIn by dataStore.data
+        .map { preferences -> preferences[booleanPreferencesKey("is_logged_in")] ?: false }
+        .collectAsState(initial = false)
+
     LaunchedEffect(Unit) {
         val storedName = dataStore.data.first()[nameKey]
-        isLoggedIn = !storedName.isNullOrEmpty()
         userName = storedName ?: "Customer"
 
         val selectedCategoriesString = dataStore.data.first()[categoriesKey] ?: ""
@@ -103,7 +109,7 @@ fun HomeScreen(
             ) {
                 // Welcome message
                 Text(
-                    text = if (isLoggedIn) "Welcome back, $userName!" else "Welcome $userName!",
+                    text = if (isLoggedIn) "Welcome back, $logedUser!" else "Welcome $logedUser! not logged",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(top = 15.dp)
                 )

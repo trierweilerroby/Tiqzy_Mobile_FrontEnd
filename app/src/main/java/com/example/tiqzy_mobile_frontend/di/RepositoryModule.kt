@@ -1,9 +1,6 @@
 package com.example.tiqzy_mobile_frontend.di
 
-import com.example.tiqzy_mobile_frontend.data.network.AuthApiService
-import com.example.tiqzy_mobile_frontend.data.network.CategoryApiService
 import com.example.tiqzy_mobile_frontend.data.network.EventApiService
-import com.example.tiqzy_mobile_frontend.data.repository.AuthRepository
 import com.example.tiqzy_mobile_frontend.data.repository.CategoryRepository
 import com.example.tiqzy_mobile_frontend.data.repository.CitiesRepository
 import com.example.tiqzy_mobile_frontend.data.repository.EventRepository
@@ -27,12 +24,6 @@ object RepositoryModule {
     @Singleton
     fun provideEventRepository(eventApiService: EventApiService): EventRepository {
         return EventRepository  (eventApiService)
-    }
-
-    @Provides
-    @Singleton
-    fun provideAuthRepository(authApiService: AuthApiService): AuthRepository {
-        return AuthRepository(authApiService)
     }
 
     @Provides
