@@ -23,7 +23,7 @@ import com.example.tiqzy_mobile_frontend.viewmodel.OnboardingViewModel
 fun FilterPopup(
     onDismissRequest: () -> Unit,
     viewModel: OnboardingViewModel = hiltViewModel(),
-    preSelectedCategories: List<String> = emptyList(), // Pre-selected categories
+    preSelectedCategories: List<String> = emptyList(),
     onApplyFilters: (List<String>) -> Unit
 ) {
     // Observe categories from the ViewModel

@@ -9,10 +9,21 @@ import javax.inject.Inject
 class EventRepository @Inject constructor(
     private val eventApiService: EventApiService
 ) {
-    suspend fun fetchEvents(date: String? = null, venueCity: String? = null): List<Event> {
+    suspend fun fetchEvents(
+        date: String? = null,
+        venueCity: String? = null,
+        categories: List<String>? = null,
+        sort: String? = null
+    ): List<Event> {
         return try {
-            println("Fetching events from API...")
-            val events = eventApiService.getEvents(date = date, venueCity = venueCity)
+            val categoriesQuery = categories?.joinToString(",")
+            println("Fetching events from API with filters - Date: $date, VenueCity: $venueCity, Categories: $categoriesQuery, Sort: $sort")
+            val events = eventApiService.getEvents(
+                date = date,
+                venueCity = venueCity,
+                categories = categoriesQuery,
+                sort = sort
+            )
             println("API Response: $events")
             if (events.isNotEmpty()) events else getDefaultEvents()
         } catch (e: Exception) {

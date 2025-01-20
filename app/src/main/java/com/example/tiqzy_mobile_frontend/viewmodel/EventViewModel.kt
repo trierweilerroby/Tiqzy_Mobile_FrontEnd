@@ -43,21 +43,34 @@ class EventViewModel @Inject constructor(
     val cities: StateFlow<List<City>> = _cities
 
     init {
-        fetchEvents()
+        //fetchEvents()
         fetchCities()
     }
 
-    fun fetchEvents(date: String? = null, venueCity: String? = null) {
+    fun fetchEvents(
+        date: String? = null,
+        venueCity: String? = null,
+        categories: List<String>? = null,
+        sort: String? = null
+    ) {
         viewModelScope.launch {
+            println("Fetching events for city: $venueCity")
             try {
-                val fetchedEvents = repository.fetchEvents(date = date, venueCity = venueCity)
-                println("Fetched events: $fetchedEvents") // Log events
-                _events.value = fetchedEvents
+                val events = repository.fetchEvents(
+                    date = date,
+                    venueCity = venueCity,
+                    categories = categories,
+                    sort = sort
+                )
+                _events.value = events
             } catch (e: Exception) {
-                e.printStackTrace()
+                println("Error fetching events: ${e.message}")
+                _events.value = emptyList()
             }
         }
     }
+
+
 
     fun fetchEventById(eventId: Int) {
         viewModelScope.launch {

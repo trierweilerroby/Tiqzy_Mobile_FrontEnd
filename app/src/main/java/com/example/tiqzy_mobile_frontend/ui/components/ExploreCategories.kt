@@ -47,7 +47,7 @@ fun ExploreCategories(navController: NavHostController, categories: List<Categor
             items(categories) { category ->
                 CategoryCard(category) {
                     println("${category.name}: events")
-                    navController.navigate("eventList?categories=${category.name}")
+                    navController.navigate("eventList?categories=${java.net.URLEncoder.encode(category.name, java.nio.charset.StandardCharsets.UTF_8.name())}")
                 }
             }
         }
@@ -60,20 +60,18 @@ fun CategoryCard(category: Category, onClick: () -> Unit) {
         modifier = Modifier
             .width(150.dp)
             .height(100.dp)
-            .clickable { onClick() }, // Navigate when clicked
+            .clickable { onClick() },
         shape = RoundedCornerShape(8.dp)
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Display the category image using Coil
             Image(
                 painter = rememberAsyncImagePainter(model = category.image),
                 contentDescription = category.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
-            // Add gradient and category name overlay
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

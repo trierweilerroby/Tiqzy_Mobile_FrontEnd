@@ -61,7 +61,7 @@ fun TicketsScreen(
                 // Use Firebase userId if logged in, otherwise fallback to DataStore
                 userId = currentUser?.uid ?: preferences[userIdKey] ?: ""
                 userName = preferences[nameKey] ?: "Customer"
-                isLoggedIn = userId.isNotEmpty() // Check if a valid userId is present
+                isLoggedIn = userId.isNotEmpty()
             }
 
         // Debugging information

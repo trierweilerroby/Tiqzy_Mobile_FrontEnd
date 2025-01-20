@@ -55,36 +55,41 @@ fun EventListScreen(
     navController: NavController,
     viewModel: EventViewModel = hiltViewModel(),
     favoritesViewModel: FavoritesViewModel = hiltViewModel(),
-    onboardingViewModel: OnboardingViewModel = hiltViewModel(),
-    location: String? = null,
+    venueCity: String? = null,
     date: String? = null,
+    categories: List<String>? = null,
+    sort: String? = null,
     initialSelectedCategory: String? = null
 ) {
     var isFilterPopupVisible by remember { mutableStateOf(false) }
     var isSortPopupVisible by remember { mutableStateOf(false) }
+
+    // Initialize selectedCategories with categories or initialSelectedCategory
     var selectedCategories by remember {
         mutableStateOf(
-            initialSelectedCategory?.let { listOf(it) } ?: emptyList()
+            categories ?: initialSelectedCategory?.let { listOf(it) } ?: emptyList()
         )
     }
 
     val events by viewModel.events.collectAsState()
     val sortKey by viewModel.sortKey.collectAsState()
 
-    LaunchedEffect(selectedCategories, sortKey, location, date) {
-        when {
-            selectedCategories.isNotEmpty() -> {
-                val categoryQuery = selectedCategories.joinToString(",")
-                viewModel.fetchEventsFilteredByCategories(categoryQuery)
-            }
-            location != null || date != null -> {
-                viewModel.fetchFilteredEvents(location, date)
-            }
+    // Update selectedCategories dynamically when categories parameter changes
+    LaunchedEffect(categories) {
+        if (categories != null) {
+            selectedCategories = categories
         }
+    }
 
-        if (sortKey.isNotEmpty()) {
-            viewModel.fetchEventsSortedBy(sortKey)
-        }
+    // Fetch events when filters change
+    LaunchedEffect(selectedCategories, sortKey, venueCity, date) {
+        println("Fetching with filters: Location=$venueCity, Date=$date, Categories=$selectedCategories, Sort=$sortKey")
+        viewModel.fetchEvents(
+            date = date,
+            venueCity = venueCity,
+            categories = selectedCategories,
+            sort = sortKey
+        )
     }
 
     Scaffold(
@@ -135,16 +140,18 @@ fun EventListScreen(
                     favoritesViewModel = favoritesViewModel
                 )
 
+                // Filter Popup
                 if (isFilterPopupVisible) {
                     FilterPopup(
                         onDismissRequest = { isFilterPopupVisible = false },
-                        onApplyFilters = { categories ->
-                            selectedCategories = categories
-                        },
-                        preSelectedCategories = selectedCategories
+                        preSelectedCategories = selectedCategories, // Pass merged categories
+                        onApplyFilters = { newCategories ->
+                            selectedCategories = newCategories // Update selectedCategories
+                        }
                     )
                 }
 
+                // Sort Popup
                 if (isSortPopupVisible) {
                     SortPopup(
                         onDismissRequest = { isSortPopupVisible = false },
