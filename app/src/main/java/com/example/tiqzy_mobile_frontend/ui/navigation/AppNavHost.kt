@@ -24,11 +24,12 @@ fun AppNavHost(
     dataStore: DataStore<Preferences>,
     favoritesViewModel: FavoritesViewModel,
     eventViewModel: EventViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isNotFirstTimer: Boolean
 ) {
     NavHost(
         navController = navController,
-        startDestination = "onboarding",
+        startDestination = if (isNotFirstTimer) "home" else "onboarding",
         modifier = modifier
     ) {
         composable("onboarding") {
@@ -101,6 +102,17 @@ fun AppNavHost(
             }
         }
 
+        composable("settings") {
+            SettingsScreen(
+                dataStoreSingleton = DataStoreSingleton(navController.context),
+                onPreferencesReset = {
+                    navController.navigate("onboarding") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                navController = navController
+            )
+        }
 
 
     }

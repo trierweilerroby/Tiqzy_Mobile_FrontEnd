@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -14,13 +15,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tiqzy_mobile_frontend.ui.navigation.AppNavHost
 import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
 import com.example.tiqzy_mobile_frontend.ui.theme.Tiqzy_Mobile_FrontEndTheme
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.example.tiqzy_mobile_frontend.data.database.DataStoreKeys
 import com.example.tiqzy_mobile_frontend.data.database.dataStore
 import com.example.tiqzy_mobile_frontend.ui.components.BottomNavBar
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.map
 
 
 @AndroidEntryPoint
@@ -43,7 +45,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun MainScreen(
     favoritesViewModel: FavoritesViewModel,
@@ -55,6 +56,11 @@ fun MainScreen(
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     val noNavBarScreens = listOf("onboarding", "onboardingName", "login", "signup")
+
+    // Retrieve isNotFirstTimer from DataStore
+    val isNotFirstTimer = dataStore.data
+        .map { preferences -> preferences[DataStoreKeys.NOT_FIRST_TIMER] ?: false }
+        .collectAsState(initial = false)
 
     Scaffold(
         bottomBar = {
@@ -68,7 +74,8 @@ fun MainScreen(
             dataStore = dataStore,
             favoritesViewModel = favoritesViewModel,
             eventViewModel = eventViewModel,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            isNotFirstTimer = isNotFirstTimer.value
         )
     }
 }

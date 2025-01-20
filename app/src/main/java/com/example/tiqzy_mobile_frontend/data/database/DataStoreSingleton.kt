@@ -20,6 +20,7 @@ object DataStoreKeys {
     val IS_LOGGED_IN_KEY = booleanPreferencesKey("is_logged_in")
     val CURRENT_USER_EMAIL = stringPreferencesKey("current_user_email")
     val CURRENT_USER_NAME = stringPreferencesKey("current_user_name")
+    val NOT_FIRST_TIMER = booleanPreferencesKey("not_first_timer")
 }
 
 class DataStoreSingleton @Inject constructor(private val context: Context) {
@@ -53,13 +54,13 @@ class DataStoreSingleton @Inject constructor(private val context: Context) {
         }
     }
 
-    val currentUserName: Flow<String?> = dataStore.data.map { preferences ->
+    /*val currentUserName: Flow<String?> = dataStore.data.map { preferences ->
         preferences[DataStoreKeys.CURRENT_USER_NAME]
     }
 
     val isLoggedIn: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[DataStoreKeys.IS_LOGGED_IN_KEY] ?: false
-    }
+    }*/
     // Set login state
     suspend fun setLoggedIn(isLoggedIn: Boolean) {
         dataStore.edit { preferences ->
@@ -67,7 +68,14 @@ class DataStoreSingleton @Inject constructor(private val context: Context) {
         }
     }
 
-    // Clear all data
+
+    suspend fun setNotFirstTimer(value: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[DataStoreKeys.NOT_FIRST_TIMER] = value
+        }
+    }
+
+
     suspend fun clearDataStore() {
         dataStore.edit { preferences ->
             preferences.clear()

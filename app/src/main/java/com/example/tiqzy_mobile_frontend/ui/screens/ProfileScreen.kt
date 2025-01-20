@@ -61,19 +61,10 @@ fun ProfileScreen(navController: NavController, dataStore: DataStore<Preferences
                 Button(
                     onClick = {
                         scope.launch {
-
                             FirebaseAuth.getInstance().signOut()
-                            // Clear all data in DataStore
-                            dataStore.edit { it.clear() }
-
                             // Set isLoggedIn to false
                             dataStore.edit { preferences ->
                                 preferences[DataStoreKeys.IS_LOGGED_IN_KEY] = false
-                            }
-
-                            // Navigate back to onboarding or login screen
-                            navController.navigate("onboarding") {
-                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
                             }
                         }
                     },
