@@ -53,7 +53,7 @@ fun ExploreCities(navController: NavHostController, cities: List<City>) {
             ) {
                 items(cities) { city ->
                     CityCard(city) {
-                        navController.navigate("eventList?location=${city.name}")
+                        navController.navigate("eventList?venueCity=${city.name}")
                     }
                 }
             }

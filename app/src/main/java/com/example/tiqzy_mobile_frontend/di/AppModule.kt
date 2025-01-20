@@ -13,6 +13,7 @@ import com.example.tiqzy_mobile_frontend.data.network.EventApiService
 import com.example.tiqzy_mobile_frontend.data.network.EventDeserializer
 import com.example.tiqzy_mobile_frontend.data.repository.FirebaseRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -61,6 +62,11 @@ object AppModule {
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth {
         return FirebaseAuth.getInstance()
+    }
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore {
+        return FirebaseFirestore.getInstance()
     }
 
     @Provides

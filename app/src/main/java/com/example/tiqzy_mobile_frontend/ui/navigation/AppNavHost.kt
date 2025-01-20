@@ -66,32 +66,23 @@ fun AppNavHost(
         }
 
         composable(
-            route = "eventList?date={date}&location={location}",
+            route = "eventList?date={date}&venueCity={venueCity}&categories={categories}",
             arguments = listOf(
                 navArgument("date") { type = NavType.StringType; nullable = true },
-                navArgument("location") { type = NavType.StringType; nullable = true }
-            )
-        ) { backStackEntry ->
-            val date = backStackEntry.arguments?.getString("date")
-            val location = backStackEntry.arguments?.getString("location") ?: ""
-            EventListScreen(
-                navController = navController,
-                location = location,
-                date = date,
-                favoritesViewModel = favoritesViewModel
-            )
-        }
-
-        composable(
-            route = "eventList?categories={categories}",
-            arguments = listOf(
+                navArgument("venueCity") { type = NavType.StringType; nullable = true },
                 navArgument("categories") { type = NavType.StringType; nullable = true }
             )
         ) { backStackEntry ->
-            val categories = backStackEntry.arguments?.getString("categories") ?: ""
+            val date = backStackEntry.arguments?.getString("date")
+            val venueCity = backStackEntry.arguments?.getString("venueCity")
+            val categories = backStackEntry.arguments?.getString("categories")
+
             EventListScreen(
                 navController = navController,
-                initialSelectedCategory = categories
+                location = venueCity,
+                date = date,
+                initialSelectedCategory = categories,
+                favoritesViewModel = favoritesViewModel
             )
         }
 

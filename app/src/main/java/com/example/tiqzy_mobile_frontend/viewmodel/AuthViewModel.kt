@@ -19,6 +19,7 @@ class AuthViewModel @Inject constructor(
     private val firebaseRepository: FirebaseRepository,
     private val dataStoreSingleton: DataStoreSingleton
 ) : ViewModel() {
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     // Observe the current user's email
     val currentUserEmail: StateFlow<String?> = firebaseRepository.currentUserEmail
@@ -81,5 +82,8 @@ class AuthViewModel @Inject constructor(
 
     fun getUserName(): String? {
         return firebaseRepository.getUserName()
+    }
+    fun getCurrentUserId(): String? {
+        return auth.currentUser?.uid
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -85,7 +86,7 @@ fun EventItem(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.LocationOn,
+                            imageVector = Icons.Filled.Timer,
                             contentDescription = "Location Icon",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)

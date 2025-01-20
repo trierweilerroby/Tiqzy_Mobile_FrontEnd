@@ -28,61 +28,80 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.tiqzy_mobile_frontend.R
 import com.example.tiqzy_mobile_frontend.ui.components.LoginCard
 import com.example.tiqzy_mobile_frontend.ui.components.TicketCard
 import com.example.tiqzy_mobile_frontend.ui.components.TicketsList
+import com.example.tiqzy_mobile_frontend.viewmodel.OrderViewModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.firstOrNull
 
 @Composable
-fun TicketsScreen(navController: NavHostController, dataStore: DataStore<androidx.datastore.preferences.core.Preferences>) {
+fun TicketsScreen(
+    navController: NavHostController,
+    dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
+    orderViewModel: OrderViewModel = hiltViewModel()
+) {
     val nameKey = stringPreferencesKey("user_name")
+    val userIdKey = stringPreferencesKey("user_id")
+
+    var userId by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("User") }
     var isLoggedIn by remember { mutableStateOf(false) }
 
+// Retrieve the current user from Firebase Authentication
+    val currentUser = FirebaseAuth.getInstance().currentUser
 
-
-    // Safely read from DataStore
+// Read user ID and name from DataStore and handle Firebase Authentication
     LaunchedEffect(Unit) {
         dataStore.data
             .firstOrNull()?.let { preferences ->
-                val storedName = preferences[nameKey]
-                isLoggedIn = !storedName.isNullOrEmpty()
-                userName = storedName ?: "Customer"
-            }
-    }
-
-Scaffold { innerPadding ->
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-
-            TicketsHeader()
-
-            // Conditionally display LoginCard
-            if (!isLoggedIn) {
-                LoginCard(
-                    onLoginClick = { navController.navigate("login") },
-                    onSignupClick = { navController.navigate("signup") }
-                )
-            } else {
-                TicketsList()
+                // Use Firebase userId if logged in, otherwise fallback to DataStore
+                userId = currentUser?.uid ?: preferences[userIdKey] ?: ""
+                userName = preferences[nameKey] ?: "Customer"
+                isLoggedIn = userId.isNotEmpty() // Check if a valid userId is present
             }
 
+        // Debugging information
+        if (userId.isEmpty()) {
+            println("No authenticated user. User ID is empty.")
+        } else {
+            println("User authenticated. User ID: $userId")
         }
     }
-}
 
+
+    Scaffold { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                TicketsHeader()
+
+                if (!isLoggedIn) {
+                    LoginCard(
+                        onLoginClick = { navController.navigate("login") },
+                        onSignupClick = { navController.navigate("signup") }
+                    )
+                } else {
+                    TicketsList(
+                        orderViewModel = orderViewModel,
+                        userId = userId
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -94,7 +113,6 @@ fun TicketsHeader() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Ticket Icon and Header Text
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 painter = painterResource(id = R.drawable.ticket),
