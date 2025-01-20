@@ -12,11 +12,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.tiqzy_mobile_frontend.data.database.DataStoreKeys
 import com.example.tiqzy_mobile_frontend.data.database.DataStoreSingleton
 import com.example.tiqzy_mobile_frontend.data.database.dataStore
 import com.example.tiqzy_mobile_frontend.ui.screens.*
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import com.example.tiqzy_mobile_frontend.viewmodel.FavoritesViewModel
+import kotlinx.coroutines.flow.map
 
 @Composable
 fun AppNavHost(
@@ -25,8 +27,12 @@ fun AppNavHost(
     favoritesViewModel: FavoritesViewModel,
     eventViewModel: EventViewModel,
     modifier: Modifier = Modifier,
-    isNotFirstTimer: Boolean
+    dataStoreSingleton: DataStoreSingleton
 ) {
+    val isNotFirstTimer by dataStore.data
+        .map { preferences -> preferences[DataStoreKeys.NOT_FIRST_TIMER] ?: false }
+        .collectAsState(initial = false)
+
     NavHost(
         navController = navController,
         startDestination = if (isNotFirstTimer) "home" else "onboarding",
@@ -39,7 +45,7 @@ fun AppNavHost(
             OnboardingNameScreen(navController = navController, dataStore = dataStore)
         }
         composable("onboardingCategories") {
-            OnboardingCategoriesScreen(navController = navController, dataStore = dataStore)
+            OnboardingCategoriesScreen(navController = navController, dataStore = dataStore, dataStoreSingleton = dataStoreSingleton)
         }
         composable("home") {
             HomeScreen(navController = navController, dataStore = dataStore)

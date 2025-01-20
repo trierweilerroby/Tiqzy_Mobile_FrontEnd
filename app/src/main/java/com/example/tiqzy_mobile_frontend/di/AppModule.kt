@@ -33,7 +33,7 @@ object AppModule {
     @Singleton
     fun provideGson(): Gson {
         return GsonBuilder()
-            .registerTypeAdapter(Event::class.java, EventDeserializer()) // Register custom deserializer
+            .registerTypeAdapter(Event::class.java, EventDeserializer())
             .create()
     }
 
@@ -41,7 +41,7 @@ object AppModule {
     @Singleton
     fun provideRetrofit(gson: Gson): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://api-echo-dev.apps.inholland.hcs-lab.nl/") // Replace with actual base URL
+            .baseUrl("https://api-echo-dev.apps.inholland.hcs-lab.nl/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }

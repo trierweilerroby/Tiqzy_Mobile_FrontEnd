@@ -15,6 +15,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.tiqzy_mobile_frontend.data.database.DataStoreSingleton
 import com.example.tiqzy_mobile_frontend.ui.components.CategoriesList
 import com.example.tiqzy_mobile_frontend.viewmodel.OnboardingViewModel
 import kotlinx.coroutines.launch
@@ -23,7 +24,8 @@ import kotlinx.coroutines.launch
 fun OnboardingCategoriesScreen(
     navController: NavController,
     dataStore: DataStore<Preferences>,
-    viewModel: OnboardingViewModel = hiltViewModel()
+    viewModel: OnboardingViewModel = hiltViewModel(),
+    dataStoreSingleton: DataStoreSingleton
 ) {
     // Observe categories from ViewModel
     val categories = viewModel.categories.collectAsState(initial = emptyList())
@@ -42,7 +44,12 @@ fun OnboardingCategoriesScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 // Skip Button
-                OutlinedButton(onClick = { navController.navigate("home") }) {
+                OutlinedButton(onClick = {
+                    scope.launch {
+                        dataStoreSingleton.setNotFirstTimer(true)
+                        navController.navigate("home")
+                    }
+                }) {
                     Text("Skip")
                 }
                 // Let's Go Button
@@ -52,6 +59,7 @@ fun OnboardingCategoriesScreen(
                         dataStore.edit { preferences ->
                             preferences[selectedCategoriesKey] = selectedCategoriesString
                         }
+                        dataStoreSingleton.setNotFirstTimer(true)
                         navController.navigate("home")
                     }
                 }) {
@@ -64,12 +72,8 @@ fun OnboardingCategoriesScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
-            //verticalArrangement = Arrangement.SpaceBetween
+                .padding(16.dp)
         ) {
-
-            //'Text(viewModel.message)
-
             // Header Text
             Text(
                 text = "Tell us what you like.",
@@ -77,19 +81,11 @@ fun OnboardingCategoriesScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-
-             //Categories List Component
+            // Categories List Component
             CategoriesList(
                 categories = categories.value.map { it.name },
                 selectedCategories = selectedCategories
             )
-
         }
     }
 }
-
-
-
-
-
-

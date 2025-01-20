@@ -53,13 +53,14 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Styled Reset Button
+
             Button(
                 onClick = {
                     CoroutineScope(Dispatchers.IO).launch {
                         dataStoreSingleton.clearDataStore()
                         withContext(Dispatchers.Main) {
                             onPreferencesReset()
+                            dataStoreSingleton.setNotFirstTimer(false)
                         }
                     }
                 },

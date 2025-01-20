@@ -54,14 +54,6 @@ class DataStoreSingleton @Inject constructor(private val context: Context) {
         }
     }
 
-    /*val currentUserName: Flow<String?> = dataStore.data.map { preferences ->
-        preferences[DataStoreKeys.CURRENT_USER_NAME]
-    }
-
-    val isLoggedIn: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[DataStoreKeys.IS_LOGGED_IN_KEY] ?: false
-    }*/
-    // Set login state
     suspend fun setLoggedIn(isLoggedIn: Boolean) {
         dataStore.edit { preferences ->
             preferences[DataStoreKeys.IS_LOGGED_IN_KEY] = isLoggedIn

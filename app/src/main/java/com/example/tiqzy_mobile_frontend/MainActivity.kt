@@ -18,15 +18,19 @@ import com.example.tiqzy_mobile_frontend.ui.theme.Tiqzy_Mobile_FrontEndTheme
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.example.tiqzy_mobile_frontend.data.database.DataStoreKeys
+import com.example.tiqzy_mobile_frontend.data.database.DataStoreSingleton
 import com.example.tiqzy_mobile_frontend.data.database.dataStore
 import com.example.tiqzy_mobile_frontend.ui.components.BottomNavBar
 import com.example.tiqzy_mobile_frontend.viewmodel.EventViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var dataStoreSingleton: DataStoreSingleton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -38,7 +42,8 @@ class MainActivity : ComponentActivity() {
                 MainScreen(
                     favoritesViewModel = favoritesViewModel,
                     eventViewModel = eventViewModel,
-                    dataStore = dataStore
+                    dataStore = dataStore,
+                    dataStoreSingleton = dataStoreSingleton
                 )
             }
         }
@@ -49,7 +54,8 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(
     favoritesViewModel: FavoritesViewModel,
     eventViewModel: EventViewModel,
-    dataStore: DataStore<Preferences>
+    dataStore: DataStore<Preferences>,
+    dataStoreSingleton: DataStoreSingleton
 ) {
     val navController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -75,7 +81,7 @@ fun MainScreen(
             favoritesViewModel = favoritesViewModel,
             eventViewModel = eventViewModel,
             modifier = Modifier.padding(innerPadding),
-            isNotFirstTimer = isNotFirstTimer.value
+            dataStoreSingleton = dataStoreSingleton
         )
     }
 }
