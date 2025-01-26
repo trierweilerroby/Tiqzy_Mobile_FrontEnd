@@ -1,5 +1,6 @@
 package com.example.tiqzy_mobile_frontend.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -35,11 +36,19 @@ fun FavoritesScreen(
     favoritesViewModel: FavoritesViewModel,
     allEvents: List<Event>
 ) {
+    // Collect the favorites flow as state
     val favoriteIds by favoritesViewModel.favorites.collectAsState(initial = emptySet())
+
+    // Filter the list of favorite events
     val favoriteEvents = remember(favoriteIds, allEvents) {
-        val mappedEvents = allEvents.filter { event -> favoriteIds.contains(event.id.toString()) }
-        mappedEvents
+        /*val mappedEvents = allEvents.filter { event -> favoriteIds.contains(event.id.toString()) }
+        mappedEvents*/
+        allEvents.filter { event -> favoriteIds.contains(event.id.toString()) }
     }
+
+    Log.d("FavoritesScreen", "Favorite IDs: $favoriteIds")
+    Log.d("FavoritesScreen", "Favorite Events: $favoriteEvents")
+    Log.d("FavoritesScreen", "All Events: $allEvents")
 
     Scaffold(
         topBar = {

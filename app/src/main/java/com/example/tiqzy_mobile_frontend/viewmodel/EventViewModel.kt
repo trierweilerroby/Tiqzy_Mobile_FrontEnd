@@ -43,7 +43,7 @@ class EventViewModel @Inject constructor(
     val cities: StateFlow<List<City>> = _cities
 
     init {
-        //fetchEvents()
+        fetchEvents()
         fetchCities()
     }
 
@@ -74,11 +74,11 @@ class EventViewModel @Inject constructor(
 
     fun fetchEventById(eventId: Int) {
         viewModelScope.launch {
-            println("fetchEventById called with eventId: $eventId") // Debug log
+            println("fetchEventById called with eventId: $eventId")
             try {
                 val event = repository.fetchEventById(eventId)
                 _selectedEvent.value = event
-                println("Selected Event: $event") // Add this line
+                println("Selected Event: $event")
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -109,17 +109,8 @@ class EventViewModel @Inject constructor(
     }
 
     fun updateSortKey(newSortKey: String) {
-        _sortKey.value = newSortKey // Update the sort key
+        _sortKey.value = newSortKey
     }
-
-    fun openSortPopup() {
-        _isSortPopupVisible.value = true
-    }
-
-    fun closeSortPopup() {
-        _isSortPopupVisible.value = false
-    }
-
 
        // Function to fetch filtered events
        fun fetchFilteredEvents(location: String? = null, date: String? = null) {

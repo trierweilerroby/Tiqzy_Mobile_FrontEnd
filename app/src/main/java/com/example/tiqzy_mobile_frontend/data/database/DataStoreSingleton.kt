@@ -27,17 +27,18 @@ class DataStoreSingleton @Inject constructor(private val context: Context) {
 
     private val dataStore = context.dataStore
 
+    // Flow to collect favorites
     val favorites: Flow<Set<String>> = dataStore.data.map { preferences ->
         preferences[DataStoreKeys.FAVORITES_KEY] ?: emptySet()
     }
-
+    // Add a favorite
     suspend fun addFavorite(eventId: String) {
         dataStore.edit { preferences ->
             val currentFavorites = preferences[DataStoreKeys.FAVORITES_KEY] ?: emptySet()
             preferences[DataStoreKeys.FAVORITES_KEY] = currentFavorites + eventId
         }
     }
-
+    // Remove a favorite
     suspend fun removeFavorite(eventId: String) {
         dataStore.edit { preferences ->
             val currentFavorites = preferences[DataStoreKeys.FAVORITES_KEY] ?: emptySet()

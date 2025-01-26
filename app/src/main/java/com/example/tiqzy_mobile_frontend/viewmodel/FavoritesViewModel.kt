@@ -35,6 +35,7 @@ class FavoritesViewModel @Inject constructor(
             val eventId = event.id.toString()
             if (_favorites.value.contains(eventId)) {
                 dataStoreSingleton.removeFavorite(eventId)
+
             } else {
                 dataStoreSingleton.addFavorite(eventId)
             }
