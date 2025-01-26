@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignupScreen(
     navController: NavController,
-    authViewModel: AuthViewModel = hiltViewModel() // Inject ViewModel
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -154,7 +154,6 @@ fun SignupScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Google Login Section
             GoogleLogin(
                 onGoogleLoginClick = {
                     // Implement Google Login Action

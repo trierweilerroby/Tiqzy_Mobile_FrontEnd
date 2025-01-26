@@ -4,13 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tiqzy_mobile_frontend.data.database.DataStoreSingleton
 import com.example.tiqzy_mobile_frontend.data.model.Event
-import com.example.tiqzy_mobile_frontend.data.repository.EventRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -40,13 +36,5 @@ class FavoritesViewModel @Inject constructor(
                 dataStoreSingleton.addFavorite(eventId)
             }
         }
-    }
-
-    fun isFavorite(event: Event): Boolean {
-        return _favorites.value.contains(event.id.toString())
-    }
-
-    fun mapFavoriteIdsToEvents(favoriteIds: Set<String>, allEvents: List<Event>): List<Event> {
-        return allEvents.filter { event -> favoriteIds.contains(event.id.toString()) }
     }
 }

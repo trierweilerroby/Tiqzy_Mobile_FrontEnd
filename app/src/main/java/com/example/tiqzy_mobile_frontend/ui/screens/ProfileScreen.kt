@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,16 +15,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.navigation.NavController
 import com.example.tiqzy_mobile_frontend.R
-import com.example.tiqzy_mobile_frontend.data.database.DataStoreKeys
-import com.example.tiqzy_mobile_frontend.data.repository.FirebaseRepository
 import com.example.tiqzy_mobile_frontend.ui.components.LoginCard
-import com.example.tiqzy_mobile_frontend.viewmodel.AuthViewModel
-import kotlinx.coroutines.launch
-
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.map
 
 @Composable
 fun ProfileScreen(navController: NavController, dataStore: DataStore<Preferences>) {
@@ -30,6 +28,10 @@ fun ProfileScreen(navController: NavController, dataStore: DataStore<Preferences
 
     // Fetch the current user's name from FirebaseAuth
     val userName = FirebaseAuth.getInstance().currentUser?.displayName
+
+    val isLoggedIn by dataStore.data
+        .map { preferences -> preferences[booleanPreferencesKey("is_logged_in")] ?: false }
+        .collectAsState(initial = false)
 
 
     Scaffold { innerPadding ->
@@ -46,34 +48,36 @@ fun ProfileScreen(navController: NavController, dataStore: DataStore<Preferences
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    // Pass the user's name to the header
                     ProfileHeader(userName = userName)
 
-                    LoginCard(
-                        onLoginClick = { navController.navigate("login") },
-                        onSignupClick = { navController.navigate("signup") }
-                    )
+                    if (!isLoggedIn) {
+                        LoginCard(
+                            onLoginClick = { navController.navigate("login") },
+                            onSignupClick = { navController.navigate("signup") }
+                        )
+                    }
 
                     ProfileMenuSection(navController)
                 }
 
-                // Logout Button
-                Button(
-                    onClick = {
-                        scope.launch {
+                if (isLoggedIn) {
+                    Button(
+                        onClick = {
                             FirebaseAuth.getInstance().signOut()
-                            // Set isLoggedIn to false
-                            dataStore.edit { preferences ->
-                                preferences[DataStoreKeys.IS_LOGGED_IN_KEY] = false
+                            navController.navigate("home") {
+                                popUpTo(0)
                             }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text(text = "Logout", color = MaterialTheme.colorScheme.onErrorContainer)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text(
+                            text = "Logout",
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
                 }
             }
         }

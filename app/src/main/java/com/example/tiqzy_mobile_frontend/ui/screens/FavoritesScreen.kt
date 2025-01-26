@@ -41,14 +41,8 @@ fun FavoritesScreen(
 
     // Filter the list of favorite events
     val favoriteEvents = remember(favoriteIds, allEvents) {
-        /*val mappedEvents = allEvents.filter { event -> favoriteIds.contains(event.id.toString()) }
-        mappedEvents*/
         allEvents.filter { event -> favoriteIds.contains(event.id.toString()) }
     }
-
-    Log.d("FavoritesScreen", "Favorite IDs: $favoriteIds")
-    Log.d("FavoritesScreen", "Favorite Events: $favoriteEvents")
-    Log.d("FavoritesScreen", "All Events: $allEvents")
 
     Scaffold(
         topBar = {

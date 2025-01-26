@@ -134,7 +134,7 @@ fun DropdownField(label: String, value: String, onValueSelected: (String) -> Uni
                         onValueSelected(option)
                         expanded = false
                     },
-                    text = { Text(text = option) } // Updated for Material3
+                    text = { Text(text = option) }
                 )
             }
         }

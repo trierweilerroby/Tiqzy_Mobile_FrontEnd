@@ -85,17 +85,6 @@ class EventViewModel @Inject constructor(
         }
     }
 
-    fun fetchEventsFilteredByCategories(categories: String) {
-        viewModelScope.launch {
-            try {
-                val response = eventApiService.getEvents(categories = categories)
-                _events.value = response
-            } catch (e: Exception) {
-                println("Error fetching filtered events: ${e.message}")
-            }
-        }
-    }
-
     fun fetchEventsSortedBy(sortKey: String) {
         viewModelScope.launch {
             try {
@@ -112,24 +101,8 @@ class EventViewModel @Inject constructor(
         _sortKey.value = newSortKey
     }
 
-       // Function to fetch filtered events
-       fun fetchFilteredEvents(location: String? = null, date: String? = null) {
-           viewModelScope.launch {
-               try {
-                   val response = eventApiService.getEvents(
-                       venueCity = location.takeIf { !it.isNullOrEmpty() },
-                       date = date.takeIf { !it.isNullOrEmpty() }
-                   )
-                   _events.value = response
-               } catch (e: Exception) {
-                   println("Error fetching filtered events: ${e.message}")
-                   _events.value = emptyList()
-               }
-           }
-       }
 
-
-    fun fetchCities() {
+    private fun fetchCities() {
         viewModelScope.launch {
             _cities.value = citiesRepository.fetchCities()
         }

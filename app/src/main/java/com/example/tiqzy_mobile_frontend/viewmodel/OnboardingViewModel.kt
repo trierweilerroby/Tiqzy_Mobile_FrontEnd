@@ -25,5 +25,5 @@ class OnboardingViewModel @Inject constructor(
     private fun fetchCategories() {
         _categories.value = categoryRepository.fetchCategories()
     }
-    //val message = "Hilt is working"
+
 }
